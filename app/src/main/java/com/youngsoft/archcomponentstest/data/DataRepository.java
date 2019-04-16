@@ -61,4 +61,8 @@ public class DataRepository {
     public String getGradeTextClimb(int gradeCode) {
         return dataDao.getGradeName(gradeCode);
     }
+
+    public LiveData<LocationList> getLocation(int locationId) {
+        return dataDao.getLocation(locationId);
+    }
 }

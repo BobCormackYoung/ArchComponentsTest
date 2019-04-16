@@ -1,5 +1,7 @@
 package com.youngsoft.archcomponentstest.LogBookModule;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
@@ -23,8 +25,22 @@ import com.youngsoft.archcomponentstest.R;
 import com.youngsoft.archcomponentstest.data.CalendarTracker;
 import com.youngsoft.archcomponentstest.data.ClimbLog;
 import com.youngsoft.archcomponentstest.data.DataRepository;
+import com.youngsoft.archcomponentstest.data.LocationList;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+//TODO: Click Listener for adding climbs etc
+//TODO: Test the livedata functionality
+//TODO: Migrate to ViewModel for each recyclerview item: https://stackoverflow.com/questions/47453261/android-architecture-components-using-viewmodel-for-recyclerview-items
 
 public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogBookList.CalendarTrackerHolder> {
+
+    public Map<Integer, Boolean> expandedHashMap = new HashMap<>();
+    private Fragment parentFragment;
+    private DataRepository dataRepository;
+    private Context mContext;
 
     private static final DiffUtil.ItemCallback<CalendarTracker> DIFF_CALLBACK = new DiffUtil.ItemCallback<CalendarTracker>() {
         @Override
@@ -45,9 +61,6 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
             }
         }
     };
-    private Fragment parentFragment;
-    private DataRepository dataRepository;
-    private Context mContext;
 
     public AdapterLogBookList(DataRepository dataRepository, Fragment parentFragment) {
         super(DIFF_CALLBACK);
@@ -68,9 +81,10 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
         CalendarTracker currentCalendarTracker = getItem(position);
         Log.i("AdapterLogBook", "id: " + currentCalendarTracker.getId());
         holder.titleTextView.setText(Integer.toString(currentCalendarTracker.getId()));
-        //holder.textViewLocationName.setText(currentLocation.getLocationName());
         updateViewData(holder, currentCalendarTracker);
-
+        holder.expandableArrow.setImageResource(R.drawable.ic_baseline_expand_more_24px);
+        holder.dataDisplayWrapper.setVisibility(View.GONE);
+        holder.expandableArrow.setOnClickListener(new CustomOnClickListener(currentCalendarTracker, holder));
     }
 
     public CalendarTracker getCalendarTrackerAt(int position) {
@@ -82,6 +96,9 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
         Log.i("AdapterLogBookList", "updateViewData, row: " + rowId);
 
         if (currentCalendarTracker.getIsClimbCode()) {
+
+            hideWorkoutDataFields(holder);
+
             LiveData<ClimbLog> currentClimbLog = dataRepository.getClimbLog(rowId);
             currentClimbLog.observe(parentFragment, new Observer<ClimbLog>() {
                 @Override
@@ -92,25 +109,16 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
                         Log.i("AdapterLogBookList", "updateViewData climbLog is not null");
                     }
 
+                    if (!expandedHashMap.containsKey(climbLog.getId())) {
+                        expandedHashMap.put(climbLog.getId(), Boolean.FALSE);
+                    }
+
                     holder.titleTextView.setText(climbLog.getName());
 
                     GradeDataParams gradeDataParams = new GradeDataParams(climbLog.getGradeTypeCode(), climbLog.getGradeCode(), holder);
                     LoadGradeDataAsync loadGradeDataAsync = new LoadGradeDataAsync();
                     loadGradeDataAsync.execute(gradeDataParams);
 
-                    /*Executors.newSingleThreadScheduledExecutor().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            String gradeTypeClimb = dataRepository.getGradeTypeClimb(climbLog.getGradeTypeCode());
-                            String gradeNameClimb = dataRepository.getGradeTextClimb(climbLog.getGradeCode());
-                            holder.subtitleTextView.setText(gradeTypeClimb + " | " + gradeNameClimb);
-                            holder.dataClimbingValue1.setText(gradeTypeClimb + " | " + gradeNameClimb);
-                        }
-                    }); */
-
-                    //holder.subtitleTextView.setText(DatabaseReadWrite.getGradeTypeClimb(climbingDataBundle.getInt("outputGradeName"), mContext) + " | " + DatabaseReadWrite.getGradeTextClimb(climbingDataBundle.getInt("outputGradeNumber"), mContext));
-                    //holder.dataClimbingValue1.setText(DatabaseReadWrite.getGradeTypeClimb(climbingDataBundle.getInt("outputGradeName"), mContext) + " | " + DatabaseReadWrite.getGradeTextClimb(climbingDataBundle.getInt("outputGradeNumber"), mContext));
-                    //holder.dataClimbingValue2.setText(locationDataBundle.getString("outputLocationName")); // Updated
                     //holder.dataClimbingValue3.setText(DatabaseReadWrite.getAscentNameTextClimb(climbingDataBundle.getInt("outputAscent"), mContext));
                     if (climbLog.getFirstAscentCode()) {
                         holder.trophyIcon.setVisibility(View.VISIBLE);
@@ -122,12 +130,19 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
                         holder.dataClimbingValue4.setImageResource(R.drawable.ic_baseline_check_box_unchecked_24px);
                     }
 
-                    //int gpsCode = locationDataBundle.getInt("outputIsGps"); // Updated
-                    //if (gpsCode == DatabaseContract.IS_GPS_TRUE) {
-                    //    dataClimbingValue5.setImageResource(R.drawable.ic_baseline_check_box_checked_24px);
-                    //} else {
-                    //    dataClimbingValue5.setImageResource(R.drawable.ic_baseline_check_box_unchecked_24px);
-                    //}
+                    int locationId = climbLog.getLocation();
+                    LiveData<LocationList> currentLocation = dataRepository.getLocation(locationId);
+                    currentLocation.observe(parentFragment, new Observer<LocationList>() {
+                        @Override
+                        public void onChanged(@Nullable LocationList locationList) {
+                            holder.dataClimbingValue2.setText(locationList.getLocationName());
+                            if (locationList.isGps()) {
+                                holder.dataClimbingValue5.setImageResource(R.drawable.ic_baseline_check_box_checked_24px);
+                            } else {
+                                holder.dataClimbingValue5.setImageResource(R.drawable.ic_baseline_check_box_unchecked_24px);
+                            }
+                        }
+                    });
 
                     holder.itemDivider.setBackgroundColor(ContextCompat.getColor(parentFragment.getContext(), R.color.colorClimbingItemsV2));
                     holder.iconView.setImageResource(R.drawable.icons_drawstringbag96);
@@ -143,9 +158,30 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
             //WorkoutLog currentWorkoutLog = dataRepository.getWorkoutLog(rowId);
             //Log.i("AdapterLogBookList", "workoutLog " + currentWorkoutLog.getId());
         }
+    }
 
-        // load correct item from database
-        // fill in data in fields
+    private void hideWorkoutDataFields(CalendarTrackerHolder holder) {
+        holder.dataWorkoutDisplayWrapper.setVisibility(View.GONE);
+    }
+
+    public class ExpandedArrayItem {
+
+        private int mRowID;
+        private boolean mIsExpanded;
+
+        public ExpandedArrayItem(int rowID, boolean isExpanded) {
+            mRowID = rowID;
+            mIsExpanded = isExpanded;
+        }
+
+        public int getRowID() {
+            return mRowID;
+        }
+
+        public boolean getIsExpanded() {
+            return mIsExpanded;
+        }
+
     }
 
     private static class GradeDataParams {
@@ -278,4 +314,70 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
         }
 
     }
+
+    public class CustomOnClickListener implements View.OnClickListener {
+
+        CalendarTrackerHolder holder;
+        CalendarTracker calendarTracker;
+
+        public CustomOnClickListener(CalendarTracker calendarTracker, CalendarTrackerHolder holder) {
+            this.calendarTracker = calendarTracker;
+            this.holder = holder;
+        }
+
+        @Override
+        public void onClick(View v) {
+            calendarTracker.getId();
+            if (expandedHashMap.containsKey(calendarTracker.getId())) {
+                if (expandedHashMap.get(calendarTracker.getId())) {
+                    //item is expanded, un-expand it
+                    holder.dataDisplayWrapper.animate()
+                            .alpha(0.0f)
+                            .setDuration(100)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                    super.onAnimationStart(animation);
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    holder.dataDisplayWrapper.clearAnimation();
+                                    holder.dataDisplayWrapper.setVisibility(View.GONE);
+                                }
+                            });
+                    //holder.dataDisplayWrapper.setVisibility(View.GONE);
+                    holder.expandableArrow.setImageResource(R.drawable.ic_baseline_expand_more_24px);
+                    expandedHashMap.remove(calendarTracker.getId());
+                    expandedHashMap.put(calendarTracker.getId(), Boolean.FALSE);
+                } else {
+                    //item is unexpanded, expand it
+                    holder.dataDisplayWrapper.animate()
+                            .alpha(1.0f)
+                            .setDuration(100)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                    super.onAnimationStart(animation);
+                                    holder.dataDisplayWrapper.clearAnimation();
+                                    holder.dataDisplayWrapper.setVisibility(View.VISIBLE);
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                }
+                            });
+                    //holder.dataDisplayWrapper.setVisibility(View.VISIBLE);
+                    holder.expandableArrow.setImageResource(R.drawable.ic_baseline_expand_less_24px);
+                    expandedHashMap.remove(calendarTracker.getId());
+                    expandedHashMap.put(calendarTracker.getId(), Boolean.TRUE);
+                }
+            }
+        }
+
+    }
+
+    ;
 }

@@ -6,6 +6,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
+import android.location.Location;
 import android.util.Log;
 
 import java.util.List;
@@ -67,6 +68,9 @@ public interface DataDao {
 
     @Query("SELECT gradeName FROM GradeList_Table WHERE id = :rowId")
     String getGradeName(int rowId);
+
+    @Query("SELECT * FROM LocationList_Table WHERE id = :rowId")
+    LiveData<LocationList> getLocation(int rowId);
 
 
     @Insert
@@ -159,4 +163,6 @@ public interface DataDao {
 
     @Delete
     void deleteWorkoutType(WorkoutType workoutType);
+
+
 }
