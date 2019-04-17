@@ -69,8 +69,31 @@ public interface DataDao {
     @Query("SELECT gradeName FROM GradeList_Table WHERE id = :rowId")
     String getGradeName(int rowId);
 
+    @Query("SELECT ascentName FROM AscentType_Table WHERE id = :rowId")
+    String getAscentType(int rowId);
+
     @Query("SELECT * FROM LocationList_Table WHERE id = :rowId")
     LiveData<LocationList> getLocation(int rowId);
+
+    @Update
+    void updateClimbLog(ClimbLog climbLog);
+
+    @Query("UPDATE climblog_table SET name=:newName WHERE id = :rowID")
+    void update(String newName, int rowID);
+
+    @Query("UPDATE climblog_table SET gradeTypeCode=:newGradeTypeCode, gradeCode=:newGradeCode WHERE id = :rowID")
+    void update(int newGradeTypeCode, int newGradeCode, int rowID);
+
+    @Query("UPDATE climblog_table SET ascentTypeCode=:newAscentCode WHERE id = :rowID")
+    void update(int newAscentCode, int rowID);
+
+    @Query("UPDATE climblog_table SET firstAscentCode=:newFirstAscentCode WHERE id = :rowID")
+    void update(boolean newFirstAscentCode, int rowID);
+
+    @Query("UPDATE climblog_table SET location=:newLocation WHERE id = :rowID")
+    void updateLoc(int newLocation, int rowID);
+
+
 
 
     @Insert
@@ -95,8 +118,6 @@ public interface DataDao {
     @Insert
     void insertClimbLog(ClimbLog climbLog);
 
-    @Update
-    void updateClimbLog(ClimbLog climbLog);
 
     @Delete
     void deleteClimbLog(ClimbLog climbLog);

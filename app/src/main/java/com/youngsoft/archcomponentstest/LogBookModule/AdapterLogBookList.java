@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 //TODO: Click Listener for adding climbs etc
-//TODO: Test the livedata functionality
 //TODO: Migrate to ViewModel for each recyclerview item: https://stackoverflow.com/questions/47453261/android-architecture-components-using-viewmodel-for-recyclerview-items
 
 public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogBookList.CalendarTrackerHolder> {
@@ -85,6 +85,12 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
         holder.expandableArrow.setImageResource(R.drawable.ic_baseline_expand_more_24px);
         holder.dataDisplayWrapper.setVisibility(View.GONE);
         holder.expandableArrow.setOnClickListener(new CustomOnClickListener(currentCalendarTracker, holder));
+
+        holder.debugBtn1.setOnClickListener(new DebugOnClickListener(currentCalendarTracker, 1, dataRepository));
+        holder.debugBtn2.setOnClickListener(new DebugOnClickListener(currentCalendarTracker, 2, dataRepository));
+        holder.debugBtn3.setOnClickListener(new DebugOnClickListener(currentCalendarTracker, 3, dataRepository));
+        holder.debugBtn4.setOnClickListener(new DebugOnClickListener(currentCalendarTracker, 4, dataRepository));
+        holder.debugBtn5.setOnClickListener(new DebugOnClickListener(currentCalendarTracker, 5, dataRepository));
     }
 
     public CalendarTracker getCalendarTrackerAt(int position) {
@@ -118,6 +124,11 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
                     GradeDataParams gradeDataParams = new GradeDataParams(climbLog.getGradeTypeCode(), climbLog.getGradeCode(), holder);
                     LoadGradeDataAsync loadGradeDataAsync = new LoadGradeDataAsync();
                     loadGradeDataAsync.execute(gradeDataParams);
+
+                    AscentDataParams ascentDataParams = new AscentDataParams(climbLog.getAscentTypeCode(), holder);
+                    AscentDataAsync loadAscentDataAsync = new AscentDataAsync();
+                    loadAscentDataAsync.execute(ascentDataParams);
+
 
                     //holder.dataClimbingValue3.setText(DatabaseReadWrite.getAscentNameTextClimb(climbingDataBundle.getInt("outputAscent"), mContext));
                     if (climbLog.getFirstAscentCode()) {
@@ -164,25 +175,8 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
         holder.dataWorkoutDisplayWrapper.setVisibility(View.GONE);
     }
 
-    public class ExpandedArrayItem {
 
-        private int mRowID;
-        private boolean mIsExpanded;
 
-        public ExpandedArrayItem(int rowID, boolean isExpanded) {
-            mRowID = rowID;
-            mIsExpanded = isExpanded;
-        }
-
-        public int getRowID() {
-            return mRowID;
-        }
-
-        public boolean getIsExpanded() {
-            return mIsExpanded;
-        }
-
-    }
 
     private static class GradeDataParams {
         CalendarTrackerHolder holder;
@@ -194,6 +188,41 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
             this.gradeTypeCode = gradeTypeCode;
             this.gradeNameCode = gradeNameCode;
         }
+    }
+
+    private static class AscentDataParams {
+        CalendarTrackerHolder holder;
+        int ascentTypeCode;
+
+        AscentDataParams(int ascentTypeCode, CalendarTrackerHolder holder) {
+            this.holder = holder;
+            this.ascentTypeCode = ascentTypeCode;
+        }
+    }
+
+    private class LoadGradeDataAsync extends AsyncTask<GradeDataParams, Void, Void> {
+
+        String gradeTypeClimb;
+        String gradeNameClimb;
+        CalendarTrackerHolder holder;
+
+        @Override
+        protected Void doInBackground(GradeDataParams... inputParams) {
+            int gradeTypeCode = inputParams[0].gradeTypeCode;
+            int gradeNameCode = inputParams[0].gradeNameCode;
+            gradeTypeClimb = dataRepository.getGradeTypeClimb(gradeTypeCode);
+            gradeNameClimb = dataRepository.getGradeTextClimb(gradeNameCode);
+            holder = inputParams[0].holder;
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            holder.subtitleTextView.setText(gradeTypeClimb + " | " + gradeNameClimb);
+            holder.dataClimbingValue1.setText(gradeTypeClimb + " | " + gradeNameClimb);
+        }
+
     }
 
     class CalendarTrackerHolder extends RecyclerView.ViewHolder {
@@ -241,6 +270,12 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
         TextView itemDivider;
         ImageView iconView;
 
+        Button debugBtn1;
+        Button debugBtn2;
+        Button debugBtn3;
+        Button debugBtn4;
+        Button debugBtn5;
+
         public CalendarTrackerHolder(View itemView) {
             super(itemView);
             //map all views
@@ -252,6 +287,12 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
             dataDisplayWrapper = itemView.findViewById(R.id.ll_alldata_wrapper);
             trophyIcon = itemView.findViewById(R.id.trophy_icon);
             trophyText = itemView.findViewById(R.id.trophy_text);
+
+            debugBtn1 = itemView.findViewById(R.id.btn_debug1);
+            debugBtn2 = itemView.findViewById(R.id.btn_debug2);
+            debugBtn3 = itemView.findViewById(R.id.btn_debug3);
+            debugBtn4 = itemView.findViewById(R.id.btn_debug4);
+            debugBtn5 = itemView.findViewById(R.id.btn_debug5);
 
             dataClimbingDisplayWrapper = itemView.findViewById(R.id.ll_logbook_climbing_data_wrapper);
             dataClimbingWrapper1 = itemView.findViewById(R.id.ll_logbook_climbing_data1_wrapper);
@@ -290,18 +331,15 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
         }
     }
 
-    private class LoadGradeDataAsync extends AsyncTask<GradeDataParams, Void, Void> {
+    private class AscentDataAsync extends AsyncTask<AscentDataParams, Void, Void> {
 
-        String gradeTypeClimb;
-        String gradeNameClimb;
+        String ascentTypeName;
         CalendarTrackerHolder holder;
 
         @Override
-        protected Void doInBackground(GradeDataParams... inputParams) {
-            int gradeTypeCode = inputParams[0].gradeTypeCode;
-            int gradeNameCode = inputParams[0].gradeNameCode;
-            gradeTypeClimb = dataRepository.getGradeTypeClimb(gradeTypeCode);
-            gradeNameClimb = dataRepository.getGradeTextClimb(gradeNameCode);
+        protected Void doInBackground(AscentDataParams... inputParams) {
+            int ascentTypeCode = inputParams[0].ascentTypeCode;
+            ascentTypeName = dataRepository.getAscentTypeClimb(ascentTypeCode);
             holder = inputParams[0].holder;
             return null;
         }
@@ -309,11 +347,11 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            holder.subtitleTextView.setText(gradeTypeClimb + " | " + gradeNameClimb);
-            holder.dataClimbingValue1.setText(gradeTypeClimb + " | " + gradeNameClimb);
+            holder.dataClimbingValue3.setText(ascentTypeName);
         }
 
     }
+
 
     public class CustomOnClickListener implements View.OnClickListener {
 
@@ -379,5 +417,38 @@ public class AdapterLogBookList extends ListAdapter<CalendarTracker, AdapterLogB
 
     }
 
-    ;
+    public class DebugOnClickListener implements View.OnClickListener {
+
+        CalendarTracker calendarTracker;
+        int jobId;
+        DataRepository repository;
+
+        public DebugOnClickListener(CalendarTracker calendarTracker, int jobId, DataRepository repository) {
+            this.calendarTracker = calendarTracker;
+            this.jobId = jobId;
+            this.repository = repository;
+        }
+
+        @Override
+        public void onClick(View v) {
+            calendarTracker.getRowId();
+            switch (jobId) {
+                case 1:
+                    repository.updateClimbLogName("Debug1", calendarTracker.getRowId(), 1);
+                    break;
+                case 2:
+                    repository.updateClimbLogGrade(1, 15, calendarTracker.getRowId(), 2);
+                    break;
+                case 3:
+                    repository.updateClimbLogAscentType(9, calendarTracker.getRowId(), 3);
+                    break;
+                case 4:
+                    repository.updateClimbLogFirstAscent(false, calendarTracker.getRowId(), 4);
+                    break;
+                case 5:
+                    //repository.updateClimbLogLocation(3, calendarTracker.getRowId(), 5);
+                    break;
+            }
+        }
+    }
 }

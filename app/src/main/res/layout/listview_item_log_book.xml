@@ -437,4 +437,43 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/debug_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_debug1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M 1" />
+
+        <Button
+            android:id="@+id/btn_debug2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M 2" />
+
+        <Button
+            android:id="@+id/btn_debug3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M 3" />
+
+        <Button
+            android:id="@+id/btn_debug4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M 4" />
+
+        <Button
+            android:id="@+id/btn_debug5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M 5" />
+
+
+    </LinearLayout>
+
 </LinearLayout>
