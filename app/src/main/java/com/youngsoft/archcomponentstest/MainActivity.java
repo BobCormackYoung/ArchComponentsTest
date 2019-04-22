@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Fragment fragment = null;
     Class fragmentClass;
     String fragmentName;
-    private ViewModelDatabase viewModelDatabase;
+    public ViewModelDatabase viewModelDatabase;
     private ViewModelMainActivity mViewModelMainActivity;
 
     public static DrawerLayout getDrawer() {

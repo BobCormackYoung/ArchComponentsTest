@@ -40,6 +40,10 @@ public class ViewModelDatabase extends AndroidViewModel {
         allLocationList = dataRepository.getAllLocationLists();
     }
 
+    public DataRepository getDataRepository() {
+        return dataRepository;
+    }
+
     public LiveData<List<AscentType>> getAllAscentTypes() {
         return allAscentTypes;
     }

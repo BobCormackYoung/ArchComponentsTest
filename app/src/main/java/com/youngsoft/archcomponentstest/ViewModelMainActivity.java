@@ -16,8 +16,6 @@ public class ViewModelMainActivity extends AndroidViewModel {
         return fragmentClass;
     }
 
-    ;
-
     public void setFragmentClass(Class fragment) {
         this.fragmentClass = fragment;
     }

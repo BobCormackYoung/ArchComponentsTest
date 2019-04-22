@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    tools:context=".LogBookModule.FragmentAddClimb">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="24dp">
+
+        <LinearLayout
+            android:id="@+id/ll_bottom_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bt_add_climb_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancel" />
+
+            <Button
+                android:id="@+id/bt_add_climb_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Save" />
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/ll_bottom_buttons">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/AdderHeaderStyle"
+                        android:layout_width="wrap_content"
+                        android:text="Date" />
+
+                    <EditText
+                        android:id="@+id/et_add_climb_5"
+                        style="@style/EditTextNonFocusableNonEditableNonClickable"
+                        android:hint="Date" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/AdderHeaderStyle"
+                        android:text="Route Name" />
+
+                    <EditText
+                        android:id="@+id/et_add_climb_1"
+                        style="@style/EditTextFocusableEditableNonClickable"
+                        android:hint="Enter Route Name" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/AdderHeaderStyle"
+                        android:text="Location Name" />
+
+                    <EditText
+                        android:id="@+id/et_add_climb_2a"
+                        style="@style/EditTextNonFocusableNonEditableClickable"
+                        android:hint="Click to select location" />
+
+                    <EditText
+                        android:id="@+id/et_add_climb_2"
+                        style="@style/EditTextFocusableEditableNonClickable"
+                        android:hint="Enter New Location" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/bt_getGps"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Get GPS" />
+
+                        <ImageView
+                            android:id="@+id/iv_grey_cross"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_gravity="center_vertical"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_grey_cross" />
+
+                        <com.wang.avi.AVLoadingIndicatorView
+                            android:id="@+id/iv_av_loading_indicator"
+                            style="@style/AVLoadingIndicatorView"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_margin="0dp"
+                            app:indicatorColor="#808080"
+                            app:indicatorName="BallClipRotatePulseIndicator" />
+
+                        <ImageView
+                            android:id="@+id/iv_green_tick"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_gravity="center_vertical"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_green_tick" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="76dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="Latitude:" />
+
+                                <TextView
+                                    android:id="@+id/tv_latitude"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    tools:text="XX.XXXX" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="76dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="Longitude:" />
+
+                                <TextView
+                                    android:id="@+id/tv_longitude"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    tools:text="XX.XXXX" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/AdderHeaderStyle"
+                        android:text="Ascent Type" />
+
+                    <EditText
+                        android:id="@+id/et_add_climb_3"
+                        style="@style/EditTextNonFocusableNonEditableClickable"
+                        android:clickable="true"
+                        android:hint="Click to select" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/AdderHeaderStyle"
+                        android:text="Grade" />
+
+                    <EditText
+                        android:id="@+id/et_add_climb_4"
+                        style="@style/EditTextNonFocusableNonEditableClickable"
+                        android:clickable="true"
+                        android:hint="Click to select" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/AdderHeaderStyle"
+                        android:text="First Ascent" />
+
+                    <CheckBox
+                        android:id="@+id/cb_add_climb_firstascent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:checked="false" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
+
+</LinearLayout>

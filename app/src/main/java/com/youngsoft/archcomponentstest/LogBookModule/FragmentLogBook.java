@@ -1,9 +1,11 @@
 package com.youngsoft.archcomponentstest.LogBookModule;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -18,6 +20,7 @@ import com.youngsoft.archcomponentstest.R;
 import com.youngsoft.archcomponentstest.UtilModule.CachingFragmentStatePagerAdapter;
 import com.youngsoft.archcomponentstest.UtilModule.TimeUtils;
 
+import java.sql.Time;
 import java.util.Calendar;
 
 public class FragmentLogBook extends Fragment {
@@ -47,26 +50,12 @@ public class FragmentLogBook extends Fragment {
      */
     public FragmentLogBook newInstance() {
         FragmentLogBook fragment = new FragmentLogBook();
-
-        //currentDate = Calendar.getInstance();
-        //long outputDate = currentDate.getTimeInMillis();
-
-        //mViewModelLogBook = ViewModelProviders.of(this).get(ViewModelLogBook.class);
-        //mViewModelLogBook.setCurrentDate(Calendar.getInstance().getTimeInMillis());
-
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Get the LogBook ViewModel from the parent class
-        mViewModelLogBook = ViewModelProviders.of(getActivity()).get(ViewModelLogBook.class);
-        if (!mViewModelLogBook.getIsDate()) {
-            mViewModelLogBook.setCurrentDate(Calendar.getInstance());
-        }
-        if (getArguments() != null) {
-        }
     }
 
     @Override
@@ -77,9 +66,6 @@ public class FragmentLogBook extends Fragment {
         adapterViewPager = new MyPagerAdapter(getChildFragmentManager());
         viewPager.setAdapter(adapterViewPager);
 
-        // Set pager to current date
-        viewPager.setCurrentItem(TimeUtils.getPositionForDay(mViewModelLogBook.getCurrentDate()));
-        refreshViews();
         // Set PageChangeListener
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -90,9 +76,9 @@ public class FragmentLogBook extends Fragment {
             // When new page is selected, udpate the header to match the new date
             @Override
             public void onPageSelected(int position) {
-                Calendar newDate = TimeUtils.getDayForPosition(position);
-                mViewModelLogBook.setCurrentDate(newDate);
-                refreshViews();
+                logBookHeader.setText(TimeUtils.convertDate(TimeUtils.getDayForPosition(position).getTimeInMillis(), "yyyy-MM-dd"));
+                //Calendar newDate = TimeUtils.getDayForPosition(position);
+                //mViewModelLogBook.setCurrentDate(newDate);
             }
 
             @Override
@@ -105,12 +91,8 @@ public class FragmentLogBook extends Fragment {
         button_previous_day.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = viewPager.getCurrentItem();
-                int newPosition = position - 1;
-                viewPager.setCurrentItem(newPosition, true);
-                //Calendar newDate = TimeUtils.getDayForPosition(newPosition);
-                //mViewModelLogBook.setCurrentDate(newDate);
-                refreshViews();
+                mViewModelLogBook.setCurrentPosition(viewPager.getCurrentItem() - 1);
+
             }
         });
 
@@ -118,16 +100,11 @@ public class FragmentLogBook extends Fragment {
         button_next_day.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = viewPager.getCurrentItem();
-                int newPosition = position + 1;
-                viewPager.setCurrentItem(newPosition, true);
-                //Calendar newDate = TimeUtils.getDayForPosition(newPosition);
-                //mViewModelLogBook.setCurrentDate(newDate);
-                refreshViews();
+                mViewModelLogBook.setCurrentPosition(viewPager.getCurrentItem() + 1);
             }
         });
-/*
-        // Add Climb Button
+
+/*        // Add Climb Button
         button_add_climb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,9 +125,9 @@ public class FragmentLogBook extends Fragment {
                         .addToBackStack(null)
                         .commit();
             }
-        });
+        });*/
 
-        button_add_workout.setOnClickListener(new View.OnClickListener() {
+/*        button_add_workout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Get the currently displayed page position
@@ -177,15 +154,23 @@ public class FragmentLogBook extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.i("FragmentLogBook", "onActivityCreated");
+        mViewModelLogBook = ViewModelProviders.of(getActivity()).get(ViewModelLogBook.class);
+        mViewModelLogBook.getCurrentPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer position) {
+                viewPager.setCurrentItem(position, true);
+                Calendar date = TimeUtils.getDayForPosition(position);
+            }
+        });
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         Log.i("FragmentLogBook", "onAttach");
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
     }
 
     @Override
@@ -205,8 +190,9 @@ public class FragmentLogBook extends Fragment {
     }
 
     private void refreshViews() {
-        logBookHeader.setText(TimeUtils.convertDate(mViewModelLogBook.getCurrentDate().getTimeInMillis(), "yyyy-MM-dd"));
+        //logBookHeader.setText(TimeUtils.convertDate(mViewModelLogBook.getCurrentDate().getTimeInMillis(), "yyyy-MM-dd"));
     }
+
 
     // Pager Adapter
     public static class MyPagerAdapter extends CachingFragmentStatePagerAdapter {

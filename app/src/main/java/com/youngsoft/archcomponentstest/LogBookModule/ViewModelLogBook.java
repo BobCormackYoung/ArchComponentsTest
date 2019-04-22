@@ -2,6 +2,8 @@ package com.youngsoft.archcomponentstest.LogBookModule;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -11,7 +13,9 @@ import java.util.Calendar;
 
 public class ViewModelLogBook extends AndroidViewModel {
 
-    Calendar currentDate = null;
+    private MutableLiveData<Calendar> currentDate = new MutableLiveData<>();
+    private MutableLiveData<Integer> currentPosition = new MutableLiveData<>();
+
     boolean isDate = false;
     boolean isNewClimb = true;
     boolean isNewWorkout = true;
@@ -21,17 +25,30 @@ public class ViewModelLogBook extends AndroidViewModel {
 
     public ViewModelLogBook(@NonNull Application application) {
         super(application);
+        currentDate.setValue(Calendar.getInstance());
+        currentPosition.setValue(TimeUtils.getPositionForDay(Calendar.getInstance()));
     }
 
-    public Calendar getCurrentDate() {
+    public LiveData<Calendar> getCurrentDate() {
         return currentDate;
     }
 
     public void setCurrentDate(Calendar date) {
         Log.i("ViewModelLogBook", "setCurrentDate: " + TimeUtils.convertDate(date.getTimeInMillis(), "yyyy-MM-dd"));
-        currentDate = date;
+        currentDate.setValue(date);
+        currentPosition.setValue(TimeUtils.getPositionForDay(date));
         setIsDateTrue();
     }
+
+    public LiveData<Integer> getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public void setCurrentPosition(int position) {
+        currentPosition.setValue(position);
+    }
+
+
 
     public void setIsDateFalse() {
         isDate = false;
@@ -41,52 +58,12 @@ public class ViewModelLogBook extends AndroidViewModel {
         isDate = true;
     }
 
-    public boolean getIsDate() {
-        return isDate;
-    }
-
     public void setIsNewClimbTrue() {
         isNewClimb = true;
     }
 
-    public void setIsNewClimbFalse() {
-        isNewClimb = false;
-    }
-
-    public boolean getIsNewClimb() {
-        return isNewClimb;
-    }
-
-    public void setIsNewWorkoutTrue() {
-        isNewWorkout = true;
-    }
-
-    public void setIsNewWorkoutFalse() {
-        isNewWorkout = false;
-    }
-
-    public boolean getIsNewWorkout() {
-        return isNewClimb;
-    }
-
-    public int getAddClimbRowId() {
-        return addClimbRowId;
-    }
-
     public void setAddClimbRowId(int input) {
         addClimbRowId = input;
-    }
-
-    public int getAddWorkoutRowId() {
-        return addClimbRowId;
-    }
-
-    public void setAddWorkoutRowId(int input) {
-        addClimbRowId = input;
-    }
-
-    public long getAddClimbDate() {
-        return addClimbDate;
     }
 
     public void setAddClimbDate(long input) {
