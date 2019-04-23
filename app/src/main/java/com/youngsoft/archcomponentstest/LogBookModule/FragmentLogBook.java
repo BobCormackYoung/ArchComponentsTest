@@ -54,11 +54,6 @@ public class FragmentLogBook extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_log_book, container, false);
@@ -104,16 +99,14 @@ public class FragmentLogBook extends Fragment {
             }
         });
 
-/*        // Add Climb Button
+        // Add Climb Button
         button_add_climb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Get the currently displayed page position
                 // Get it's calendar instance (date)
                 // Convert date to milliseconds
-                int position = viewPager.getCurrentItem();
-                Calendar cal = TimeUtils.getDayForPosition(position);
-                long date = cal.getTimeInMillis();
+                long date = TimeUtils.getDayForPosition(viewPager.getCurrentItem()).getTimeInMillis();
 
                 mViewModelLogBook.setIsNewClimbTrue();
                 mViewModelLogBook.setAddClimbDate(date);
@@ -125,7 +118,7 @@ public class FragmentLogBook extends Fragment {
                         .addToBackStack(null)
                         .commit();
             }
-        });*/
+        });
 
 /*        button_add_workout.setOnClickListener(new View.OnClickListener() {
             @Override

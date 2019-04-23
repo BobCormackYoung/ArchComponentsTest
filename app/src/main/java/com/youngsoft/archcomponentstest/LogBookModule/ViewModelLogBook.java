@@ -48,8 +48,6 @@ public class ViewModelLogBook extends AndroidViewModel {
         currentPosition.setValue(position);
     }
 
-
-
     public void setIsDateFalse() {
         isDate = false;
     }
