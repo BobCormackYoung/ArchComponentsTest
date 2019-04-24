@@ -6,13 +6,22 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import com.youngsoft.archcomponentstest.data.AscentType;
+import com.youngsoft.archcomponentstest.data.DataRepository;
+
+import java.util.List;
+
 public class ViewModelAddClimb extends AndroidViewModel {
 
+    private DataRepository dataRepository;
     private MutableLiveData<String> routeName = new MutableLiveData<>();
     private MutableLiveData<Boolean> isFirstAscent = new MutableLiveData<>();
+    private LiveData<List<AscentType>> ascentTypeLiveData;
+    private MutableLiveData<AscentType> pickedAscentType = new MutableLiveData<>();
 
     public ViewModelAddClimb(@NonNull Application application) {
         super(application);
+        dataRepository = new DataRepository(application);
     }
 
     public LiveData<String> getRouteName() {
@@ -29,5 +38,27 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setIsFirstAscent(Boolean isFirstAscent) {
         this.isFirstAscent.setValue(isFirstAscent);
+    }
+
+    public LiveData<List<AscentType>> getAscentTypeLiveData() {
+        return ascentTypeLiveData;
+    }
+
+    public void setAscentTypeLiveData() {
+        ascentTypeLiveData = dataRepository.getAllAscentTypes();
+    }
+
+    public MutableLiveData<AscentType> getPickedAscentType() {
+        return pickedAscentType;
+    }
+
+    public void setPickedAscentType(AscentType pickedAscentType) {
+        this.pickedAscentType.setValue(pickedAscentType);
+    }
+
+    public void resetData() {
+        routeName.setValue(null);
+        isFirstAscent.setValue(null);
+        pickedAscentType.setValue(null);
     }
 }

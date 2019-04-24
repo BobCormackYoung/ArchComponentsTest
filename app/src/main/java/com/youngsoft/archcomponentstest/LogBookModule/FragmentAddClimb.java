@@ -65,6 +65,13 @@ public class FragmentAddClimb extends Fragment {
         view = inflater.inflate(R.layout.fragment_add_climb, container, false);
         mapViews();
 
+        ascentTypeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Launch new fragment
+            }
+        });
+
         firstAscentCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
