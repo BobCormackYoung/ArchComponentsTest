@@ -2,6 +2,7 @@ package com.youngsoft.archcomponentstest;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -9,13 +10,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.youngsoft.archcomponentstest.data.AscentType;
 import com.youngsoft.archcomponentstest.LogBookModule.FragmentLogBook;
+import com.youngsoft.archcomponentstest.data.AscentType;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static String fragmentNameLogBook = "FragmentLogBook";
     public static String fragmentNameCalendar = "FragmentCalendar";
     public static String fragmentNameLocationManager = "FragmentLocationManager";
-    public static String fragmentNameAddClimb = "fragmentAddClimb";
+    public static String fragmentNameAddClimb = "fragmentAddClimbContainer";
     public static String fragmentNameAddWorkout = "fragmentAddWorkout";
     public static String fragmentNameChildGradeHolder = "fragmentChildGradeHolder";
     public static String fragmentNameParentGradeHolder = "fragmentParentGradeHolder";
@@ -155,4 +155,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        /*if (mViewModelMainActivity.getFragmentClass() == FragmentAddClimbContainer.class) {
+            getSupportFragmentManager().get
+        }*/
+        super.onBackPressed();
+    }
 }

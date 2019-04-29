@@ -3,7 +3,6 @@ package com.youngsoft.archcomponentstest.LogBookModule;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,7 +19,6 @@ import com.youngsoft.archcomponentstest.R;
 import com.youngsoft.archcomponentstest.UtilModule.CachingFragmentStatePagerAdapter;
 import com.youngsoft.archcomponentstest.UtilModule.TimeUtils;
 
-import java.sql.Time;
 import java.util.Calendar;
 
 public class FragmentLogBook extends Fragment {
@@ -112,9 +110,9 @@ public class FragmentLogBook extends Fragment {
                 mViewModelLogBook.setAddClimbDate(date);
                 mViewModelLogBook.setAddClimbRowId(-1);
 
-                FragmentAddClimb fragmentAddClimb = new FragmentAddClimb();
+                Fragment fragmentAddClimbContainer = new FragmentAddClimbContainer();
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.flContent, fragmentAddClimb, MainActivity.fragmentNameAddClimb)
+                        .replace(R.id.flContent, fragmentAddClimbContainer, MainActivity.fragmentNameAddClimb)
                         .addToBackStack(null)
                         .commit();
             }

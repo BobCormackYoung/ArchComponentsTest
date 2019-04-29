@@ -1,13 +1,13 @@
 package com.youngsoft.archcomponentstest.LogBookModule;
 
 import android.Manifest;
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wang.avi.AVLoadingIndicatorView;
-import com.youngsoft.archcomponentstest.MainActivity;
 import com.youngsoft.archcomponentstest.R;
+import com.youngsoft.archcomponentstest.data.AscentType;
 
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
 
@@ -68,7 +68,7 @@ public class FragmentAddClimb extends Fragment {
         ascentTypeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Launch new fragment
+                pickAscentType();
             }
         });
 
@@ -88,13 +88,25 @@ public class FragmentAddClimb extends Fragment {
             }
         });
 
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //exitFragment();
+            }
+        });
+
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        viewModelAddClimb = ViewModelProviders.of(getActivity()).get(ViewModelAddClimb.class);
+        //viewModelAddClimb = ViewModelProviders.of(getActivity()).get(ViewModelAddClimb.class);
+
+        /*
+        Create viewmodel for AddClimb fragment - scope to Fragment Lifecycle
+         */
+        viewModelAddClimb = ViewModelProviders.of(getParentFragment()).get(ViewModelAddClimb.class);
         viewModelLogBook = ViewModelProviders.of(getActivity()).get(ViewModelLogBook.class);
 
         /*
@@ -104,9 +116,14 @@ public class FragmentAddClimb extends Fragment {
         viewModelAddClimb.getIsFirstAscent().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean aBoolean) {
-                Log.i("FragAddClimb", "FA CheckBox Observer, aBoolean: " + aBoolean + ", CheckBox: " + firstAscentCheckBox.isChecked());
-                if (aBoolean != firstAscentCheckBox.isChecked()) {
-                    firstAscentCheckBox.setChecked(aBoolean);
+                //Log.i("FragAddClimb", "FA CheckBox Observer, aBoolean: " + aBoolean + ", CheckBox: " + firstAscentCheckBox.isChecked());
+                if (aBoolean == null) {
+                    firstAscentCheckBox.setChecked(false);
+                    viewModelAddClimb.setIsFirstAscent(false);
+                } else {
+                    if (aBoolean != firstAscentCheckBox.isChecked()) {
+                        firstAscentCheckBox.setChecked(aBoolean);
+                    }
                 }
             }
         });
@@ -118,9 +135,26 @@ public class FragmentAddClimb extends Fragment {
         viewModelAddClimb.getRouteName().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                Log.i("FragAddClimb", "RouteName Observer, s: " + s + ", EditText: " + routeNameView.getText().toString());
-                if (!s.equals(routeNameView.getText().toString())) {
-                    routeNameView.setText(s);
+                //Log.i("FragAddClimb", "RouteName Observer, s: " + s + ", EditText: " + routeNameView.getText().toString());
+                if (s.isEmpty()) {
+                    routeNameView.getText().clear();
+                } else {
+                    if (!s.equals(routeNameView.getText().toString())) {
+                        routeNameView.setText(s);
+                    }
+                }
+            }
+        });
+
+        /*
+        Observe AscentType livedata
+        Update editText if so
+         */
+        viewModelAddClimb.getPickedAscentType().observe(getViewLifecycleOwner(), new Observer<AscentType>() {
+            @Override
+            public void onChanged(@Nullable AscentType ascentType) {
+                if (ascentType != null) {
+                    ascentTypeView.setText(ascentType.getAscentName());
                 }
             }
         });
@@ -155,10 +189,56 @@ public class FragmentAddClimb extends Fragment {
     }
 
     private void pickAscentType() {
-        /*FragmentAscentHolder fragmentAscentHolder = new FragmentAscentHolder();
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.flContent, fragmentAscentHolder, MainActivity.fragmentNameAscentHolder)
+        FragmentAddClimbContainer fragmentAddClimbContainer = (FragmentAddClimbContainer) this.getParentFragment();
+        fragmentAddClimbContainer.startPickAscentFragment();
+        /*Fragment fragmentPickAscent = new FragmentPickAscent();
+        getActivity().getFragmentManager().beginTransaction()
+                .replace(R.id.flAddClimbContainer, fragmentPickAscent, MainActivity.fragmentNameAscentHolder)
                 .addToBackStack(null)
                 .commit();*/
+    }
+
+    private void exitFragment() {
+        //viewModelAddClimb.getIsFirstAscent().removeObservers(getViewLifecycleOwner());
+        //viewModelAddClimb.getRouteName().removeObservers(getViewLifecycleOwner());
+        //viewModelAddClimb.getPickedAscentType().removeObservers(getViewLifecycleOwner());
+        //viewModelAddClimb.resetData();
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        } else {
+            Log.i("MainActivity", "nothing on backstack, calling super");
+            //super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("FragmentAddClimb", "onPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("FragmentAddClimb", "onStop");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.i("FragmentAddClimb", "onDestroyView");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("FragmentAddClimb", "onDestroy");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.i("FragmentAddClimb", "onDetach");
     }
 }

@@ -22,6 +22,7 @@ public class ViewModelAddClimb extends AndroidViewModel {
     public ViewModelAddClimb(@NonNull Application application) {
         super(application);
         dataRepository = new DataRepository(application);
+        setAscentTypeLiveData();
     }
 
     public LiveData<String> getRouteName() {
@@ -57,8 +58,13 @@ public class ViewModelAddClimb extends AndroidViewModel {
     }
 
     public void resetData() {
-        routeName.setValue(null);
-        isFirstAscent.setValue(null);
-        pickedAscentType.setValue(null);
+        //routeName.setValue("");
+        //isFirstAscent.setValue(null);
+        //pickedAscentType.setValue(null);
+        this.onCleared();
+    }
+
+    public DataRepository getDataRepository() {
+        return dataRepository;
     }
 }
