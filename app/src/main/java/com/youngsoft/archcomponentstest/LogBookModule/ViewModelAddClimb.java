@@ -5,9 +5,12 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.youngsoft.archcomponentstest.data.AscentType;
 import com.youngsoft.archcomponentstest.data.DataRepository;
+import com.youngsoft.archcomponentstest.data.GradeList;
+import com.youngsoft.archcomponentstest.data.GradeType;
 
 import java.util.List;
 
@@ -17,12 +20,20 @@ public class ViewModelAddClimb extends AndroidViewModel {
     private MutableLiveData<String> routeName = new MutableLiveData<>();
     private MutableLiveData<Boolean> isFirstAscent = new MutableLiveData<>();
     private LiveData<List<AscentType>> ascentTypeLiveData;
+    private LiveData<List<GradeType>> gradeTypeLiveData;
+    private LiveData<List<GradeList>> gradeLiveData;
+    private LiveData<List<GradeList>> subsetGradeLiveData;
     private MutableLiveData<AscentType> pickedAscentType = new MutableLiveData<>();
+    private MutableLiveData<GradeType> pickedGradeTypeMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<GradeList> pickedGradeListMutableLiveData = new MutableLiveData<>();
+
 
     public ViewModelAddClimb(@NonNull Application application) {
         super(application);
         dataRepository = new DataRepository(application);
         setAscentTypeLiveData();
+        setGradeTypeLiveData();
+        setGradeLiveData();
     }
 
     public LiveData<String> getRouteName() {
@@ -49,6 +60,30 @@ public class ViewModelAddClimb extends AndroidViewModel {
         ascentTypeLiveData = dataRepository.getAllAscentTypes();
     }
 
+    public void setGradeTypeLiveData() {
+        gradeTypeLiveData = dataRepository.getAllGradeTypes();
+    }
+
+    public void setGradeLiveData() {
+        gradeLiveData = dataRepository.getAllGrades();
+    }
+
+    public LiveData<List<GradeType>> getGradeTypeLiveData() {
+        return gradeTypeLiveData;
+    }
+
+    public LiveData<List<GradeList>> getGradeLiveData() {
+        return gradeLiveData;
+    }
+
+    public LiveData<List<GradeList>> getSubsetGradeLiveData() {
+        return subsetGradeLiveData;
+    }
+
+    public void setSubsetGradeLiveData(int index) {
+        subsetGradeLiveData = dataRepository.getSubsetGradeLists(index);
+    }
+
     public MutableLiveData<AscentType> getPickedAscentType() {
         return pickedAscentType;
     }
@@ -57,14 +92,24 @@ public class ViewModelAddClimb extends AndroidViewModel {
         this.pickedAscentType.setValue(pickedAscentType);
     }
 
-    public void resetData() {
-        //routeName.setValue("");
-        //isFirstAscent.setValue(null);
-        //pickedAscentType.setValue(null);
-        this.onCleared();
-    }
-
     public DataRepository getDataRepository() {
         return dataRepository;
+    }
+
+    public MutableLiveData<GradeType> getPickedGradeTypeMutableLiveData() {
+        return pickedGradeTypeMutableLiveData;
+    }
+
+    public void setPickedGradeTypeMutableLiveData(GradeType pickedGradeType) {
+        Log.i("ViewModelAddClimb", "Picked Grade Type = " + pickedGradeType.getGradeTypeName());
+        pickedGradeTypeMutableLiveData.setValue(pickedGradeType);
+    }
+
+    public MutableLiveData<GradeList> getPickedGradeListMutableLiveData() {
+        return pickedGradeListMutableLiveData;
+    }
+
+    public void setPickedGradeListMutableLiveData(GradeList pickedGradeList) {
+        pickedGradeListMutableLiveData.setValue(pickedGradeList);
     }
 }

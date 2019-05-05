@@ -22,6 +22,8 @@ import android.widget.TextView;
 import com.wang.avi.AVLoadingIndicatorView;
 import com.youngsoft.archcomponentstest.R;
 import com.youngsoft.archcomponentstest.data.AscentType;
+import com.youngsoft.archcomponentstest.data.GradeList;
+import com.youngsoft.archcomponentstest.data.GradeType;
 
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
 
@@ -88,10 +90,17 @@ public class FragmentAddClimb extends Fragment {
             }
         });
 
+        gradeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickGrade();
+            }
+        });
+
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //exitFragment();
+                exitFragment();
             }
         });
 
@@ -135,7 +144,6 @@ public class FragmentAddClimb extends Fragment {
         viewModelAddClimb.getRouteName().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                //Log.i("FragAddClimb", "RouteName Observer, s: " + s + ", EditText: " + routeNameView.getText().toString());
                 if (s.isEmpty()) {
                     routeNameView.getText().clear();
                 } else {
@@ -156,6 +164,28 @@ public class FragmentAddClimb extends Fragment {
                 if (ascentType != null) {
                     ascentTypeView.setText(ascentType.getAscentName());
                 }
+            }
+        });
+
+        /*
+        Observe PickedGradeType Live Data
+        Update edit Text if so
+         */
+        viewModelAddClimb.getPickedGradeTypeMutableLiveData().observe(getViewLifecycleOwner(), new Observer<GradeType>() {
+            @Override
+            public void onChanged(@Nullable GradeType gradeType) {
+                gradeView.setText(gradeType.getGradeTypeName());
+            }
+        });
+
+        /*
+        Observe PickedGradeList Live Data
+        Update edit Text if so
+         */
+        viewModelAddClimb.getPickedGradeListMutableLiveData().observe(getViewLifecycleOwner(), new Observer<GradeList>() {
+            @Override
+            public void onChanged(@Nullable GradeList gradeList) {
+                //do something
             }
         });
 
@@ -180,29 +210,16 @@ public class FragmentAddClimb extends Fragment {
     }
 
     private void pickGrade() {
-        //FragmentParentGradeHolder fragmentParentGradeHolder = new FragmentParentGradeHolder();
-
-        /*getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.flContent, MainActivity.fragmentParentGradeHolder, MainActivity.fragmentNameParentGradeHolder)
-                .addToBackStack(null)
-                .commit();*/
+        FragmentAddClimbContainer fragmentAddClimbContainer = (FragmentAddClimbContainer) this.getParentFragment();
+        fragmentAddClimbContainer.startPickGradeTypeFragment();
     }
 
     private void pickAscentType() {
         FragmentAddClimbContainer fragmentAddClimbContainer = (FragmentAddClimbContainer) this.getParentFragment();
         fragmentAddClimbContainer.startPickAscentFragment();
-        /*Fragment fragmentPickAscent = new FragmentPickAscent();
-        getActivity().getFragmentManager().beginTransaction()
-                .replace(R.id.flAddClimbContainer, fragmentPickAscent, MainActivity.fragmentNameAscentHolder)
-                .addToBackStack(null)
-                .commit();*/
     }
 
     private void exitFragment() {
-        //viewModelAddClimb.getIsFirstAscent().removeObservers(getViewLifecycleOwner());
-        //viewModelAddClimb.getRouteName().removeObservers(getViewLifecycleOwner());
-        //viewModelAddClimb.getPickedAscentType().removeObservers(getViewLifecycleOwner());
-        //viewModelAddClimb.resetData();
         FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();

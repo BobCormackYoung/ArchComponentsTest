@@ -20,6 +20,8 @@ public class FragmentAddClimbContainer extends Fragment {
     ViewModelMainActivity viewModelMainActivity;
     Fragment fragmentAddClimb;// = new FragmentAddClimb();
     Fragment fragmentPickAscent;// = new FragmentPickAscent();
+    Fragment fragmentPickGradeType;
+    Fragment fragmentPickGrade;
 
     public void FragmentAddClimbContainer() {
     }
@@ -29,6 +31,8 @@ public class FragmentAddClimbContainer extends Fragment {
         super.onCreate(savedInstanceState);
         fragmentAddClimb = new FragmentAddClimb();
         fragmentPickAscent = new FragmentPickAscent();
+        fragmentPickGradeType = new FragmentPickGradeType();
+        fragmentPickGrade = new FragmentPickGrade();
     }
 
     @Nullable
@@ -52,8 +56,6 @@ public class FragmentAddClimbContainer extends Fragment {
         viewModelMainActivity.setFragmentClass(FragmentAddClimbContainer.class);
 
         startAddClimbFragment();
-
-
     }
 
     public void startPickAscentFragment() {
@@ -62,6 +64,21 @@ public class FragmentAddClimbContainer extends Fragment {
                 .replace(R.id.flAddClimbContainer, fragmentPickAscent, "fragmentPickAscent")
                 .addToBackStack(null).commit();
     }
+
+    public void startPickGradeTypeFragment() {
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.flAddClimbContainer, fragmentPickGradeType, "fragmentPickGradeType")
+                .addToBackStack(null).commit();
+    }
+
+    public void startPickGradeFragment() {
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.flAddClimbContainer, fragmentPickGrade, "fragmentPickGrade")
+                .addToBackStack(null).commit();
+    }
+
 
     public void startAddClimbFragment() {
         getChildFragmentManager()

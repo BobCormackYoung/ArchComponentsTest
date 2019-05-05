@@ -11,6 +11,9 @@ public class DataRepository {
 
     private DataDao dataDao;
     private LiveData<List<AscentType>> allAscentTypes;
+    private LiveData<List<GradeType>> allGradeTypes;
+    private LiveData<List<GradeList>> allGradeLists;
+    private LiveData<List<GradeList>> subsetGradeLists;
     private LiveData<List<LocationList>> allLocationLists;
     //private LiveData<List<CalendarTracker>> calendarTrackerBetweenDates;
     private LiveData<List<CalendarTracker>> allCalendarTracker;
@@ -20,10 +23,14 @@ public class DataRepository {
         DataDatabase database = DataDatabase.getInstance(application);
         dataDao = database.dataDao();
         allAscentTypes = dataDao.getAllAscents();
+        allGradeTypes = dataDao.getAllGradeTypes();
+        allGradeLists = dataDao.getAllGradeLists();
         allLocationLists = dataDao.getAllLocationLists();
         //calendarTrackerBetweenDates = dataDao.getCalendarTrackerBetweenDates(Double firstDate, Double lastDate);
     }
 
+
+    //Get all table data
     public LiveData<List<LocationList>> getAllLocationLists() {
         return allLocationLists;
     }
@@ -32,10 +39,25 @@ public class DataRepository {
         return allAscentTypes;
     }
 
+    public LiveData<List<GradeType>> getAllGradeTypes() {
+        return allGradeTypes;
+    }
+
+    public LiveData<List<GradeList>> getAllGrades() {
+        return allGradeLists;
+    }
+
+    //Get calendar tracker between dates
     public LiveData<List<CalendarTracker>> getCalendarTrackerBetweenDates(long firstDate, long lastDate) {
         Log.i("DataRepository", "in getCalendarTrackerBetweenDates");
         LiveData<List<CalendarTracker>> calendarTrackerBetweenDates = dataDao.getCalendarTrackerBetweenDates(firstDate, lastDate);
         return calendarTrackerBetweenDates;
+    }
+
+    //Get subset grade list
+    public LiveData<List<GradeList>> getSubsetGradeLists(int index) {
+        subsetGradeLists = dataDao.getSubsetGradeLists(index);
+        return subsetGradeLists;
     }
 
     public LiveData<List<CalendarTracker>> getAllCalendarTracker() {
@@ -71,7 +93,6 @@ public class DataRepository {
         return dataDao.getLocation(locationId);
     }
 
-
     public void updateClimbLogName(String newName, int rowId, int caseId) {
         ClimbLogData climbLogData = new ClimbLogData(newName, rowId, caseId);
         new UpdateNoteAsyncTask(dataDao).execute(climbLogData);
@@ -95,6 +116,7 @@ public class DataRepository {
     public void updateClimbLogLocation(int location, int rowId, int caseId) {
 
     }
+
 
     private static class UpdateNoteAsyncTask extends AsyncTask<ClimbLogData, Void, Void> {
         private DataDao dataDao;

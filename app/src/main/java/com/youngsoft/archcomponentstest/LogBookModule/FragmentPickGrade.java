@@ -15,18 +15,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.youngsoft.archcomponentstest.R;
-import com.youngsoft.archcomponentstest.data.AscentType;
+import com.youngsoft.archcomponentstest.data.GradeList;
 
 import java.util.List;
 
-public class FragmentPickAscent extends Fragment {
+public class FragmentPickGrade extends Fragment {
 
     ViewModelAddClimb viewModelAddClimb;
     View view;
     RecyclerView recyclerView;
 
-    public FragmentPickAscent() {
-        // Required empty public constructor
+    public FragmentPickGrade() {
     }
 
     @Nullable
@@ -54,31 +53,35 @@ public class FragmentPickAscent extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //viewModelAddClimb = ViewModelProviders.of(getActivity()).get(ViewModelAddClimb.class);
-
-        //FragmentManager fragmentManager = getFragmentManager();
-        //FragmentAddClimb fragmentAddClimb = fragmentManager.getFragment();
         viewModelAddClimb = ViewModelProviders.of(getParentFragment()).get(ViewModelAddClimb.class);
-
-        final AdapterPickAscent adapter = new AdapterPickAscent(viewModelAddClimb.getDataRepository(), this, viewModelAddClimb);
+        final AdapterPickGrade adapter = new AdapterPickGrade(viewModelAddClimb.getDataRepository(), this, viewModelAddClimb);
         recyclerView = view.findViewById(R.id.rv_parent);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
-        recyclerView.setAdapter(adapter);
-        viewModelAddClimb.getAscentTypeLiveData().observe(getViewLifecycleOwner(), new Observer<List<AscentType>>() {
+        /*
+        Get the subset grade list for the picked grade type
+
+        viewModelAddClimb.getPickedGradeTypeMutableLiveData().observe(getViewLifecycleOwner(), new Observer<GradeType>() {
             @Override
-            public void onChanged(@Nullable List<AscentType> ascentTypes) {
-                adapter.submitList(ascentTypes);
+            public void onChanged(@Nullable GradeType gradeType) {
+                Log.i("PickGrade", "gradeType = " + gradeType.getId());
+                viewModelAddClimb.setSubsetGradeLiveData(gradeType.getId());
+            }
+        });*/
+
+        recyclerView.setAdapter(adapter);
+
+        viewModelAddClimb.getSubsetGradeLiveData().observe(getViewLifecycleOwner(), new Observer<List<GradeList>>() {
+            @Override
+            public void onChanged(@Nullable List<GradeList> gradeLists) {
+                adapter.submitList(gradeLists);
             }
         });
-
     }
-
 
     public void exitFragment() {
         FragmentAddClimbContainer fragmentAddClimbContainer = (FragmentAddClimbContainer) this.getParentFragment();
         fragmentAddClimbContainer.startAddClimbFragment();
     }
-
 }

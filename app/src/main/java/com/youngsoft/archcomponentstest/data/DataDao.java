@@ -6,8 +6,6 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
-import android.location.Location;
-import android.util.Log;
 
 import java.util.List;
 
@@ -50,16 +48,28 @@ public interface DataDao {
     @Query("SELECT * FROM LocationList_Table ORDER BY id DESC")
     LiveData<List<LocationList>> getAllLocationLists();
 
-    //Select calendar tracker info between dates
-    @Query("SELECT * FROM CalendarTracker_Table WHERE date BETWEEN :firstDate AND :lastDate")
-    LiveData<List<CalendarTracker>> getCalendarTrackerBetweenDates(long firstDate, long lastDate);
+    @Query("SELECT * FROM GradeType_Table ORDER BY id DESC")
+    LiveData<List<GradeType>> getAllGradeTypes();
+
+    @Query("SELECT * FROM GradeList_Table ORDER BY id DESC")
+    LiveData<List<GradeList>> getAllGradeLists();
 
     @Query("SELECT * FROM CalendarTracker_Table ORDER BY date DESC")
     LiveData<List<CalendarTracker>> getAllCalendarTracker();
 
+    //Select calendar tracker info between dates
+    @Query("SELECT * FROM CalendarTracker_Table WHERE date BETWEEN :firstDate AND :lastDate")
+    LiveData<List<CalendarTracker>> getCalendarTrackerBetweenDates(long firstDate, long lastDate);
+
+    //Select specific gradeList data
+    @Query("SELECT * FROM GradeList_Table WHERE gradeTypeCode=:index ORDER BY id DESC")
+    LiveData<List<GradeList>> getSubsetGradeLists(int index);
+
+    //Select specific climbLog entry
     @Query("SELECT * FROM ClimbLog_Table WHERE id = :rowId")
     LiveData<ClimbLog> getClimbLog(int rowId);
 
+    //Select specific workoutLog entry
     @Query("SELECT * FROM WorkoutLog_Table WHERE id = :rowId")
     WorkoutLog getWorkoutLog(int rowId);
 
