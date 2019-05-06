@@ -70,6 +70,7 @@ public class AdapterPickGrade extends ListAdapter<GradeList, AdapterPickGrade.Gr
         @Override
         public void onClick(View v) {
             viewModel.setPickedGradeListMutableLiveData(gradeList);
+            viewModel.setPickedCombinedGradeLiveData(parentFragment.getPickedGradeType(), gradeList);
             parentFragment.exitFragment();
         }
     }

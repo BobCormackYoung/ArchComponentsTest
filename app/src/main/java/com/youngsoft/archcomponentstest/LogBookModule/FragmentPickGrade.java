@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.youngsoft.archcomponentstest.R;
 import com.youngsoft.archcomponentstest.data.GradeList;
+import com.youngsoft.archcomponentstest.data.GradeType;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class FragmentPickGrade extends Fragment {
     ViewModelAddClimb viewModelAddClimb;
     View view;
     RecyclerView recyclerView;
+    GradeType pickedGradeType;
 
     public FragmentPickGrade() {
     }
@@ -59,16 +61,12 @@ public class FragmentPickGrade extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
-        /*
-        Get the subset grade list for the picked grade type
-
         viewModelAddClimb.getPickedGradeTypeMutableLiveData().observe(getViewLifecycleOwner(), new Observer<GradeType>() {
             @Override
             public void onChanged(@Nullable GradeType gradeType) {
-                Log.i("PickGrade", "gradeType = " + gradeType.getId());
-                viewModelAddClimb.setSubsetGradeLiveData(gradeType.getId());
+                pickedGradeType = gradeType;
             }
-        });*/
+        });
 
         recyclerView.setAdapter(adapter);
 
@@ -83,5 +81,9 @@ public class FragmentPickGrade extends Fragment {
     public void exitFragment() {
         FragmentAddClimbContainer fragmentAddClimbContainer = (FragmentAddClimbContainer) this.getParentFragment();
         fragmentAddClimbContainer.startAddClimbFragment();
+    }
+
+    public GradeType getPickedGradeType() {
+        return pickedGradeType;
     }
 }

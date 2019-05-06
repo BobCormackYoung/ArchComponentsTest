@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.youngsoft.archcomponentstest.data.AscentType;
+import com.youngsoft.archcomponentstest.data.CombinedGradeData;
 import com.youngsoft.archcomponentstest.data.DataRepository;
 import com.youngsoft.archcomponentstest.data.GradeList;
 import com.youngsoft.archcomponentstest.data.GradeType;
@@ -26,6 +27,7 @@ public class ViewModelAddClimb extends AndroidViewModel {
     private MutableLiveData<AscentType> pickedAscentType = new MutableLiveData<>();
     private MutableLiveData<GradeType> pickedGradeTypeMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<GradeList> pickedGradeListMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<CombinedGradeData> pickedCombinedGradeLiveData = new MutableLiveData<>();
 
 
     public ViewModelAddClimb(@NonNull Application application) {
@@ -111,5 +113,19 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setPickedGradeListMutableLiveData(GradeList pickedGradeList) {
         pickedGradeListMutableLiveData.setValue(pickedGradeList);
+    }
+
+    public MutableLiveData<CombinedGradeData> getPickedCombinedGradeLiveData() {
+        return pickedCombinedGradeLiveData;
+    }
+
+    public void setPickedCombinedGradeLiveDataGradeType(GradeType pickedGradeType) {
+        CombinedGradeData combinedGradeData = new CombinedGradeData(pickedGradeType);
+        pickedCombinedGradeLiveData.setValue(combinedGradeData);
+    }
+
+    public void setPickedCombinedGradeLiveData(GradeType pickedGradeType, GradeList pickedGradeList) {
+        CombinedGradeData combinedGradeData = new CombinedGradeData(pickedGradeType, pickedGradeList);
+        pickedCombinedGradeLiveData.setValue(combinedGradeData);
     }
 }

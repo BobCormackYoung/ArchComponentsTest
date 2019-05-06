@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,8 +69,9 @@ public class AdapterPickGradeType extends ListAdapter<GradeType, AdapterPickGrad
         @Override
         public void onClick(View v) {
             viewModel.setPickedGradeTypeMutableLiveData(gradeType);
-            viewModelAddClimb.setSubsetGradeLiveData(gradeType.getId());
-            Log.i("PickGradeType", "Picked Grade Type = " + gradeType.getGradeTypeName());
+            viewModel.setPickedCombinedGradeLiveDataGradeType(gradeType);
+            viewModel.setSubsetGradeLiveData(gradeType.getId());
+            //Log.i("PickGradeType", "Picked Grade Type = " + gradeType.getGradeTypeName());
             parentFragment.pickGrade();
         }
     }

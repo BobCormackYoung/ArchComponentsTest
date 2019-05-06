@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.wang.avi.AVLoadingIndicatorView;
 import com.youngsoft.archcomponentstest.R;
 import com.youngsoft.archcomponentstest.data.AscentType;
+import com.youngsoft.archcomponentstest.data.CombinedGradeData;
 import com.youngsoft.archcomponentstest.data.GradeList;
 import com.youngsoft.archcomponentstest.data.GradeType;
 
@@ -174,7 +175,7 @@ public class FragmentAddClimb extends Fragment {
         viewModelAddClimb.getPickedGradeTypeMutableLiveData().observe(getViewLifecycleOwner(), new Observer<GradeType>() {
             @Override
             public void onChanged(@Nullable GradeType gradeType) {
-                gradeView.setText(gradeType.getGradeTypeName());
+                //do something
             }
         });
 
@@ -186,6 +187,21 @@ public class FragmentAddClimb extends Fragment {
             @Override
             public void onChanged(@Nullable GradeList gradeList) {
                 //do something
+            }
+        });
+
+        /*
+        Observe the combined picked grade live data
+        Update editText if data changes
+         */
+        viewModelAddClimb.getPickedCombinedGradeLiveData().observe(getViewLifecycleOwner(), new Observer<CombinedGradeData>() {
+            @Override
+            public void onChanged(@Nullable CombinedGradeData combinedGradeData) {
+                if (!combinedGradeData.getNull()) {
+                    gradeView.setText(combinedGradeData.getGradeType().getGradeTypeName() + " | " + combinedGradeData.getGradeList().getGradeName());
+                } else {
+                    gradeView.setText("");
+                }
             }
         });
 

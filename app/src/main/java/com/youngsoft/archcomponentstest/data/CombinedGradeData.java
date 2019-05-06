@@ -29,4 +29,12 @@ public class CombinedGradeData {
     public void setGradeType(GradeType gradeType) {
         this.gradeType = gradeType;
     }
+
+    public boolean getNull() {
+        if (gradeList != null && gradeType != null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
