@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -236,13 +235,14 @@ public class FragmentAddClimb extends Fragment {
     }
 
     private void exitFragment() {
-        FragmentManager fragmentManager = getFragmentManager();
+        this.getParentFragment().getActivity().onBackPressed();
+        /*FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {
             Log.i("MainActivity", "nothing on backstack, calling super");
             //super.onBackPressed();
-        }
+        }*/
     }
 
     @Override

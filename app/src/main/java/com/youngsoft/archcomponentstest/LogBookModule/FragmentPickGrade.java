@@ -26,6 +26,7 @@ public class FragmentPickGrade extends Fragment {
     View view;
     RecyclerView recyclerView;
     GradeType pickedGradeType;
+    CustomOnKeyListener customOnKeyListener;
 
     public FragmentPickGrade() {
     }
@@ -42,7 +43,8 @@ public class FragmentPickGrade extends Fragment {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 Log.i("Popping", "Popping backstacks baby");
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    getFragmentManager().popBackStackImmediate();
+                    //getFragmentManager().popBackStackImmediate();
+                    goBackFragment();
                     return true;
                 }
                 return false;
@@ -76,6 +78,45 @@ public class FragmentPickGrade extends Fragment {
                 adapter.submitList(gradeLists);
             }
         });
+        customOnKeyListener = new CustomOnKeyListener();
+    }
+
+    @Override
+    public void onResume() {
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(customOnKeyListener);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        view.setOnKeyListener(null);
+        super.onPause();
+    }
+
+    public void goBackFragment() {
+        FragmentAddClimbContainer fragmentAddClimbContainer = (FragmentAddClimbContainer) this.getParentFragment();
+        fragmentAddClimbContainer.startPickGradeTypeFragment();
+    }
+
+    public class CustomOnKeyListener implements View.OnKeyListener {
+
+        public CustomOnKeyListener() {
+        }
+
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            Log.i("Popping", "Popping backstacks baby");
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    //getFragmentManager().popBackStackImmediate();
+                    goBackFragment();
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public void exitFragment() {

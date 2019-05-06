@@ -24,6 +24,7 @@ public class FragmentPickGradeType extends Fragment {
     ViewModelAddClimb viewModelAddClimb;
     View view;
     RecyclerView recyclerView;
+    CustomOnKeyListener customOnKeyListener;
 
     public FragmentPickGradeType() {
     }
@@ -32,21 +33,6 @@ public class FragmentPickGradeType extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.listview_parent_list, container, false);
-
-        view.setFocusableInTouchMode(true);
-        view.requestFocus();
-        view.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.i("Popping", "Popping backstacks baby");
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    getFragmentManager().popBackStackImmediate();
-                    return true;
-                }
-                return false;
-            }
-        });
-
         return view;
     }
 
@@ -58,7 +44,6 @@ public class FragmentPickGradeType extends Fragment {
         recyclerView = view.findViewById(R.id.rv_parent);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-
         recyclerView.setAdapter(adapter);
         viewModelAddClimb.getGradeTypeLiveData().observe(getViewLifecycleOwner(), new Observer<List<GradeType>>() {
             @Override
@@ -66,6 +51,40 @@ public class FragmentPickGradeType extends Fragment {
                 adapter.submitList(gradeTypes);
             }
         });
+        customOnKeyListener = new CustomOnKeyListener();
+    }
+
+    @Override
+    public void onResume() {
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(customOnKeyListener);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        view.setOnKeyListener(null);
+        super.onPause();
+    }
+
+    public class CustomOnKeyListener implements View.OnKeyListener {
+
+        public CustomOnKeyListener() {
+        }
+
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            Log.i("Popping", "Popping backstacks baby");
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    //getFragmentManager().popBackStackImmediate();
+                    exitFragment();
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public void exitFragment() {

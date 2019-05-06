@@ -62,21 +62,21 @@ public class FragmentAddClimbContainer extends Fragment {
         getChildFragmentManager()
                 .beginTransaction()
                 .replace(R.id.flAddClimbContainer, fragmentPickAscent, "fragmentPickAscent")
-                .addToBackStack(null).commit();
+                .addToBackStack("fragmentPickAscent").commit();
     }
 
     public void startPickGradeTypeFragment() {
         getChildFragmentManager()
                 .beginTransaction()
                 .replace(R.id.flAddClimbContainer, fragmentPickGradeType, "fragmentPickGradeType")
-                .addToBackStack(null).commit();
+                .addToBackStack("fragmentPickGradeType").commit();
     }
 
     public void startPickGradeFragment() {
         getChildFragmentManager()
                 .beginTransaction()
                 .replace(R.id.flAddClimbContainer, fragmentPickGrade, "fragmentPickGrade")
-                .addToBackStack(null).commit();
+                .addToBackStack("fragmentPickGrade").commit();
     }
 
 
@@ -84,7 +84,7 @@ public class FragmentAddClimbContainer extends Fragment {
         getChildFragmentManager()
                 .beginTransaction()
                 .replace(R.id.flAddClimbContainer, fragmentAddClimb, "fragmentAddClimb")
-                .addToBackStack(null).commit();
+                .addToBackStack("fragmentAddClimb").commit();
     }
 
 }
