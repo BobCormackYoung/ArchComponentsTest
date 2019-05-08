@@ -1,11 +1,19 @@
 package com.youngsoft.archcomponentstest.LogBookModule;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +26,27 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.wang.avi.AVLoadingIndicatorView;
 import com.youngsoft.archcomponentstest.R;
+import com.youngsoft.archcomponentstest.UtilModule.TimeUtils;
 import com.youngsoft.archcomponentstest.data.AscentType;
 import com.youngsoft.archcomponentstest.data.CombinedGradeData;
 import com.youngsoft.archcomponentstest.data.GradeList;
 import com.youngsoft.archcomponentstest.data.GradeType;
+
+import java.util.Calendar;
 
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
 
@@ -51,10 +74,12 @@ public class FragmentAddClimb extends Fragment {
     SpinnerDialog spinnerDialog;
     private ViewModelAddClimb viewModelAddClimb;
     private ViewModelLogBook viewModelLogBook;
+    Context mContext;
+    Boolean gpsAccessPermission = false;
 
-    //FusedLocationProviderClient fusedLocationClient;
-    //LocationRequest locationRequest;
-    //LocationCallback locationCallback;
+    FusedLocationProviderClient fusedLocationClient;
+    LocationRequest locationRequest;
+    LocationCallback locationCallback;
 
 
     public FragmentAddClimb() {
@@ -65,7 +90,12 @@ public class FragmentAddClimb extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_add_climb, container, false);
+        mContext = this.getParentFragment().getActivity();
         mapViews();
+
+        ivGreenTick.setVisibility(View.GONE);
+        ivGreyCross.setVisibility(View.VISIBLE);
+        ivAvi.hide();
 
         ascentTypeView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,19 +134,60 @@ public class FragmentAddClimb extends Fragment {
             }
         });
 
+        gpsButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (viewModelAddClimb.getGpsAccessPermission()) {
+                    Log.i("AddClimb GPS", "onCreate > GPS Button Pressed Access > gpsAccessPermission=true");
+                    //gpsGetLastLocation();
+                    createLocationRequest();
+                    startLocationUpdates();
+                } else {
+                    Log.i("AddClimb GPS", "onCreate > GPS Button Pressed Access > gpsAccessPermission=false");
+                }
+            }
+        });
+
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //viewModelAddClimb = ViewModelProviders.of(getActivity()).get(ViewModelAddClimb.class);
 
         /*
         Create viewmodel for AddClimb fragment - scope to Fragment Lifecycle
          */
         viewModelAddClimb = ViewModelProviders.of(getParentFragment()).get(ViewModelAddClimb.class);
         viewModelLogBook = ViewModelProviders.of(getActivity()).get(ViewModelLogBook.class);
+
+        checkGpsAccessPermission();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    Log.i("AddClimb GPS", "mLocationCallback > onLocationResult = null");
+                    ivGreenTick.setVisibility(View.GONE);
+                    ivGreyCross.setVisibility(View.VISIBLE);
+                    //ivAvi.setVisibility(View.GONE);
+                    ivAvi.hide();
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Update viewModel with location data
+                    viewModelAddClimb.setOutputLatitude(location.getLatitude());
+                    viewModelAddClimb.setOutputLongitude(location.getLongitude());
+                    viewModelAddClimb.setOutputHasGps(true);
+
+                    // new GPS value... turn off GPS updates
+                    Log.i("AddClimb GPS", "mLocationCallback > onLocationResult = turning off location updates");
+                    stopLocationUpdates();
+                    viewModelAddClimb.setRequestingLocationUpdates(false);
+                }
+            }
+        };
 
         /*
         Observe the checked data holder
@@ -168,6 +239,70 @@ public class FragmentAddClimb extends Fragment {
         });
 
         /*
+        Observe the combined picked grade live data
+        Update editText if data changes
+         */
+        viewModelAddClimb.getPickedCombinedGradeLiveData().observe(getViewLifecycleOwner(), new Observer<CombinedGradeData>() {
+            @Override
+            public void onChanged(@Nullable CombinedGradeData combinedGradeData) {
+                if (!combinedGradeData.getNull()) {
+                    gradeView.setText(combinedGradeData.getGradeType().getGradeTypeName() + " | " + combinedGradeData.getGradeList().getGradeName());
+                } else {
+                    gradeView.setText("");
+                }
+            }
+        });
+
+        /*
+        Observe longitude & update views
+         */
+        viewModelAddClimb.getOutputLongitude().observe(getViewLifecycleOwner(), new Observer<Double>() {
+            @Override
+            public void onChanged(@Nullable Double aDouble) {
+                if (aDouble != null) {
+                    textViewLongitude.setText(Double.toString(aDouble));
+                }
+            }
+        });
+
+        /*
+        Observe latitude & update views
+         */
+        viewModelAddClimb.getOutputLatitude().observe(getViewLifecycleOwner(), new Observer<Double>() {
+            @Override
+            public void onChanged(@Nullable Double aDouble) {
+                if (aDouble != null) {
+                    textViewLatitude.setText(Double.toString(aDouble));
+                }
+            }
+        });
+
+        /*
+        Observe gps status and update views
+         */
+        viewModelAddClimb.getOutputHasGps().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean != null) {
+                    if (aBoolean) {
+                        ivGreenTick.setVisibility(View.VISIBLE);
+                        ivGreyCross.setVisibility(View.GONE);
+                        ivAvi.hide();
+                    } else {
+                        ivGreenTick.setVisibility(View.GONE);
+                        ivGreyCross.setVisibility(View.VISIBLE);
+                        ivAvi.hide();
+                    }
+                } else {
+                    ivGreenTick.setVisibility(View.GONE);
+                    ivGreyCross.setVisibility(View.VISIBLE);
+                    ivAvi.hide();
+                }
+            }
+        });
+
+
+        /*
         Observe PickedGradeType Live Data
         Update edit Text if so
          */
@@ -189,18 +324,10 @@ public class FragmentAddClimb extends Fragment {
             }
         });
 
-        /*
-        Observe the combined picked grade live data
-        Update editText if data changes
-         */
-        viewModelAddClimb.getPickedCombinedGradeLiveData().observe(getViewLifecycleOwner(), new Observer<CombinedGradeData>() {
+        viewModelLogBook.getCurrentDate().observe(getViewLifecycleOwner(), new Observer<Calendar>() {
             @Override
-            public void onChanged(@Nullable CombinedGradeData combinedGradeData) {
-                if (!combinedGradeData.getNull()) {
-                    gradeView.setText(combinedGradeData.getGradeType().getGradeTypeName() + " | " + combinedGradeData.getGradeList().getGradeName());
-                } else {
-                    gradeView.setText("");
-                }
+            public void onChanged(@Nullable Calendar calendar) {
+                dateView.setText(TimeUtils.convertDate(calendar.getTimeInMillis(), "yyyy-MM-dd"));
             }
         });
 
@@ -236,42 +363,110 @@ public class FragmentAddClimb extends Fragment {
 
     private void exitFragment() {
         this.getParentFragment().getActivity().onBackPressed();
-        /*FragmentManager fragmentManager = getFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
+    }
+
+    // check permission for accessing location
+    private void checkGpsAccessPermission() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.i("AddClimb GPS", "checkGpsAccessPermission = No access, ask get permission");
+                requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+            }
         } else {
-            Log.i("MainActivity", "nothing on backstack, calling super");
-            //super.onBackPressed();
-        }*/
+            viewModelAddClimb.setGpsAccessPermission(true);
+        }
     }
 
+    // handle gps permission request result
+    @SuppressLint("MissingPermission")
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.i("FragmentAddClimb", "onPause");
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            viewModelAddClimb.setGpsAccessPermission(true);
+            Log.i("AddClimb GPS", "onRequestPermissionsResult = Access granted");
+        }
+
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.i("FragmentAddClimb", "onStop");
+    // get the last GPS location
+    @SuppressLint("MissingPermission")
+    private void gpsGetLastLocation() {
+        fusedLocationClient.getLastLocation().addOnSuccessListener((Activity) mContext, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    viewModelAddClimb.setOutputLatitude(location.getLatitude());
+                    viewModelAddClimb.setOutputLongitude(location.getLongitude());
+                    viewModelAddClimb.setOutputHasGps(true);
+                } else {
+                }
+            }
+        });
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.i("FragmentAddClimb", "onDestroyView");
+    // create the location request
+    protected void createLocationRequest() {
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(10000); // 10 seonds
+        locationRequest.setFastestInterval(5000); // 5 seconds
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        SettingsClient client = LocationServices.getSettingsClient(mContext);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener((Activity) mContext, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                // ...
+                viewModelAddClimb.setRequestingLocationUpdates(true);
+            }
+        });
+
+        task.addOnFailureListener((Activity) mContext, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    Log.i("AddClimb GPS", "createLocationRequest > task.addOnFailureListener = No Success!");
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult((Activity) mContext,
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i("FragmentAddClimb", "onDestroy");
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdates() {
+        Log.i("AddClimb GPS", "startLocationUpdates = starting updates");
+
+        if (viewModelAddClimb.getGpsAccessPermission()) {
+            ivGreenTick.setVisibility(View.GONE);
+            ivGreyCross.setVisibility(View.GONE);
+            //ivAvi.setVisibility(View.VISIBLE);
+            ivAvi.show();
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */);
+        }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.i("FragmentAddClimb", "onDetach");
+    private void stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+        ivAvi.hide();
+        Log.i("AddClimb GPS", "stopLocationUpdates = stopping location updates");
     }
+
 }

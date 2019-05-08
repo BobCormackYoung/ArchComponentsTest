@@ -18,16 +18,24 @@ import java.util.List;
 public class ViewModelAddClimb extends AndroidViewModel {
 
     private DataRepository dataRepository;
-    private MutableLiveData<String> routeName = new MutableLiveData<>();
-    private MutableLiveData<Boolean> isFirstAscent = new MutableLiveData<>();
     private LiveData<List<AscentType>> ascentTypeLiveData;
     private LiveData<List<GradeType>> gradeTypeLiveData;
     private LiveData<List<GradeList>> gradeLiveData;
     private LiveData<List<GradeList>> subsetGradeLiveData;
+    private MutableLiveData<String> routeName = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isFirstAscent = new MutableLiveData<>();
     private MutableLiveData<AscentType> pickedAscentType = new MutableLiveData<>();
     private MutableLiveData<GradeType> pickedGradeTypeMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<GradeList> pickedGradeListMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<CombinedGradeData> pickedCombinedGradeLiveData = new MutableLiveData<>();
+    private Boolean gpsAccessPermission = false;
+
+    private MutableLiveData<Double> outputLatitude = new MutableLiveData<>();
+    private MutableLiveData<Double> outputLongitude = new MutableLiveData<>();
+    private MutableLiveData<String> outputLocationName = new MutableLiveData<>();
+    private MutableLiveData<Boolean> outputHasGps = new MutableLiveData<>();
+    private MutableLiveData<Boolean> requestingLocationUpdates = new MutableLiveData<>();
+
 
 
     public ViewModelAddClimb(@NonNull Application application) {
@@ -127,5 +135,53 @@ public class ViewModelAddClimb extends AndroidViewModel {
     public void setPickedCombinedGradeLiveData(GradeType pickedGradeType, GradeList pickedGradeList) {
         CombinedGradeData combinedGradeData = new CombinedGradeData(pickedGradeType, pickedGradeList);
         pickedCombinedGradeLiveData.setValue(combinedGradeData);
+    }
+
+    public Boolean getGpsAccessPermission() {
+        return gpsAccessPermission;
+    }
+
+    public void setGpsAccessPermission(Boolean input) {
+        this.gpsAccessPermission = input;
+    }
+
+    public MutableLiveData<Double> getOutputLatitude() {
+        return outputLatitude;
+    }
+
+    public void setOutputLatitude(Double input) {
+        outputLatitude.setValue(input);
+    }
+
+    public MutableLiveData<Double> getOutputLongitude() {
+        return outputLongitude;
+    }
+
+    public void setOutputLongitude(Double input) {
+        outputLongitude.setValue(input);
+    }
+
+    public MutableLiveData<String> getOutputLocationName() {
+        return outputLocationName;
+    }
+
+    public void setOutputLocationName(String input) {
+        outputLocationName.setValue(input);
+    }
+
+    public MutableLiveData<Boolean> getOutputHasGps() {
+        return outputHasGps;
+    }
+
+    public void setOutputHasGps(Boolean input) {
+        outputHasGps.setValue(input);
+    }
+
+    public MutableLiveData<Boolean> getRequestingLocationUpdates() {
+        return requestingLocationUpdates;
+    }
+
+    public void setRequestingLocationUpdates(Boolean input) {
+        requestingLocationUpdates.setValue(input);
     }
 }
