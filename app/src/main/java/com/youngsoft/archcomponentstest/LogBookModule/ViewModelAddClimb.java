@@ -12,6 +12,7 @@ import com.youngsoft.archcomponentstest.data.CombinedGradeData;
 import com.youngsoft.archcomponentstest.data.DataRepository;
 import com.youngsoft.archcomponentstest.data.GradeList;
 import com.youngsoft.archcomponentstest.data.GradeType;
+import com.youngsoft.archcomponentstest.data.LocationList;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class ViewModelAddClimb extends AndroidViewModel {
     private LiveData<List<GradeType>> gradeTypeLiveData;
     private LiveData<List<GradeList>> gradeLiveData;
     private LiveData<List<GradeList>> subsetGradeLiveData;
+    private LiveData<List<LocationList>> locationListLiveData;
     private MutableLiveData<String> routeName = new MutableLiveData<>();
     private MutableLiveData<Boolean> isFirstAscent = new MutableLiveData<>();
     private MutableLiveData<AscentType> pickedAscentType = new MutableLiveData<>();
@@ -36,14 +38,13 @@ public class ViewModelAddClimb extends AndroidViewModel {
     private MutableLiveData<Boolean> outputHasGps = new MutableLiveData<>();
     private MutableLiveData<Boolean> requestingLocationUpdates = new MutableLiveData<>();
 
-
-
     public ViewModelAddClimb(@NonNull Application application) {
         super(application);
         dataRepository = new DataRepository(application);
         setAscentTypeLiveData();
         setGradeTypeLiveData();
         setGradeLiveData();
+        setLocationListLiveData();
     }
 
     public LiveData<String> getRouteName() {
@@ -60,6 +61,14 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setIsFirstAscent(Boolean isFirstAscent) {
         this.isFirstAscent.setValue(isFirstAscent);
+    }
+
+    public void setLocationListLiveData() {
+        locationListLiveData = dataRepository.getAllLocationLists();
+    }
+
+    public LiveData<List<LocationList>> getLocationListLiveData() {
+        return locationListLiveData;
     }
 
     public LiveData<List<AscentType>> getAscentTypeLiveData() {

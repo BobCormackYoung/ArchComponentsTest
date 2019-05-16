@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rv_location_parent_wrapper"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/bt_new_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Create New Location" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_parent_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/bt_new_location"
+        android:gravity="center"
+        android:text="insert listview here" />
+
+</RelativeLayout>

@@ -22,6 +22,7 @@ public class FragmentAddClimbContainer extends Fragment {
     Fragment fragmentPickAscent;// = new FragmentPickAscent();
     Fragment fragmentPickGradeType;
     Fragment fragmentPickGrade;
+    Fragment fragmentPickLocation;
 
     public void FragmentAddClimbContainer() {
     }
@@ -33,6 +34,7 @@ public class FragmentAddClimbContainer extends Fragment {
         fragmentPickAscent = new FragmentPickAscent();
         fragmentPickGradeType = new FragmentPickGradeType();
         fragmentPickGrade = new FragmentPickGrade();
+        fragmentPickLocation = new FragmentPickLocation();
     }
 
     @Nullable
@@ -86,5 +88,13 @@ public class FragmentAddClimbContainer extends Fragment {
                 .replace(R.id.flAddClimbContainer, fragmentAddClimb, "fragmentAddClimb")
                 .addToBackStack("fragmentAddClimb").commit();
     }
+
+    public void startPickLocationFragment() {
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.flAddClimbContainer, fragmentPickLocation, "fragmentPickLocation")
+                .addToBackStack("fragmentPickLocation").commit();
+    }
+
 
 }

@@ -104,6 +104,13 @@ public class FragmentAddClimb extends Fragment {
             }
         });
 
+        locationNameView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickLocation();
+            }
+        });
+
         firstAscentCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -354,6 +361,11 @@ public class FragmentAddClimb extends Fragment {
     private void pickGrade() {
         FragmentAddClimbContainer fragmentAddClimbContainer = (FragmentAddClimbContainer) this.getParentFragment();
         fragmentAddClimbContainer.startPickGradeTypeFragment();
+    }
+
+    private void pickLocation() {
+        FragmentAddClimbContainer fragmentAddClimbContainer = (FragmentAddClimbContainer) this.getParentFragment();
+        fragmentAddClimbContainer.startPickLocationFragment();
     }
 
     private void pickAscentType() {
