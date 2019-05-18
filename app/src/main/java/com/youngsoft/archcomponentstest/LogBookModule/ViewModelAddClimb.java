@@ -29,6 +29,8 @@ public class ViewModelAddClimb extends AndroidViewModel {
     private MutableLiveData<AscentType> pickedAscentType = new MutableLiveData<>();
     private MutableLiveData<GradeType> pickedGradeTypeMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<GradeList> pickedGradeListMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<LocationList> pickedLocationMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isNewLocation = new MutableLiveData<>();
     private MutableLiveData<CombinedGradeData> pickedCombinedGradeLiveData = new MutableLiveData<>();
     private Boolean gpsAccessPermission = false;
 
@@ -45,6 +47,23 @@ public class ViewModelAddClimb extends AndroidViewModel {
         setGradeTypeLiveData();
         setGradeLiveData();
         setLocationListLiveData();
+        setIsNewLocation(false);
+    }
+
+    public LiveData<Boolean> getIsNewLocation() {
+        return isNewLocation;
+    }
+
+    public void setIsNewLocation(Boolean input) {
+        isNewLocation.setValue(input);
+    }
+
+    public LiveData<LocationList> getPickedLocationList() {
+        return pickedLocationMutableLiveData;
+    }
+
+    public void setPickedLocation(LocationList input) {
+        pickedLocationMutableLiveData.setValue(input);
     }
 
     public LiveData<String> getRouteName() {

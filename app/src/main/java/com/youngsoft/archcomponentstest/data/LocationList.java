@@ -42,10 +42,6 @@ public class LocationList {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getLocationName() {
         return locationName;
     }
@@ -65,4 +61,29 @@ public class LocationList {
     public boolean isGps() {
         return isGps;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setLocationName(String input) {
+        locationName = input;
+    }
+
+    public void setClimbCount(int input) {
+        climbCount = input;
+    }
+
+    public void setGpsLongitude(double input) {
+        gpsLongitude = input;
+    }
+
+    public void setGpsLatitude(double input) {
+        gpsLatitude = input;
+    }
+
+    public void setIsGps(boolean input) {
+        isGps = input;
+    }
+
 }

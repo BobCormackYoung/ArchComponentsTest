@@ -72,7 +72,7 @@ public class AdapterPickLocation extends ListAdapter<LocationList, AdapterPickLo
 
         @Override
         public void onClick(View v) {
-            //viewModel.setPickedAscentType(locationList);
+            viewModel.setPickedLocation(locationList);
             parentFragment.exitFragment();
         }
     }

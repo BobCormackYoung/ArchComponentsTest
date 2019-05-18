@@ -43,8 +43,7 @@ import com.youngsoft.archcomponentstest.R;
 import com.youngsoft.archcomponentstest.UtilModule.TimeUtils;
 import com.youngsoft.archcomponentstest.data.AscentType;
 import com.youngsoft.archcomponentstest.data.CombinedGradeData;
-import com.youngsoft.archcomponentstest.data.GradeList;
-import com.youngsoft.archcomponentstest.data.GradeType;
+import com.youngsoft.archcomponentstest.data.LocationList;
 
 import java.util.Calendar;
 
@@ -76,6 +75,7 @@ public class FragmentAddClimb extends Fragment {
     private ViewModelLogBook viewModelLogBook;
     Context mContext;
     Boolean gpsAccessPermission = false;
+    Boolean isNewLocation = false;
 
     FusedLocationProviderClient fusedLocationClient;
     LocationRequest locationRequest;
@@ -123,6 +123,15 @@ public class FragmentAddClimb extends Fragment {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     viewModelAddClimb.setRouteName(routeNameView.getText().toString());
+                }
+            }
+        });
+
+        locationNewNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    viewModelAddClimb.setOutputLocationName(locationNewNameView.getText().toString());
                 }
             }
         });
@@ -308,33 +317,65 @@ public class FragmentAddClimb extends Fragment {
             }
         });
 
-
         /*
-        Observe PickedGradeType Live Data
-        Update edit Text if so
+        Observe location name
          */
-        viewModelAddClimb.getPickedGradeTypeMutableLiveData().observe(getViewLifecycleOwner(), new Observer<GradeType>() {
+        viewModelAddClimb.getOutputLocationName().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
-            public void onChanged(@Nullable GradeType gradeType) {
-                //do something
+            public void onChanged(@Nullable String s) {
+                if (!s.isEmpty()) {
+                    if (isNewLocation) {
+                        locationNewNameView.setText(s);
+                    } else {
+                        locationNameView.setText(s);
+                    }
+                }
             }
         });
 
         /*
-        Observe PickedGradeList Live Data
-        Update edit Text if so
+        Observe the date for adding the climb
          */
-        viewModelAddClimb.getPickedGradeListMutableLiveData().observe(getViewLifecycleOwner(), new Observer<GradeList>() {
-            @Override
-            public void onChanged(@Nullable GradeList gradeList) {
-                //do something
-            }
-        });
-
         viewModelLogBook.getCurrentDate().observe(getViewLifecycleOwner(), new Observer<Calendar>() {
             @Override
             public void onChanged(@Nullable Calendar calendar) {
                 dateView.setText(TimeUtils.convertDate(calendar.getTimeInMillis(), "yyyy-MM-dd"));
+            }
+        });
+
+        /*
+        Observe whether we're creating a new location or not
+         */
+        viewModelAddClimb.getIsNewLocation().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean) {
+                    locationNameView.setText("Create New Location");
+                    viewModelAddClimb.setOutputHasGps(false);
+                    viewModelAddClimb.setOutputLatitude(null);
+                    viewModelAddClimb.setOutputLongitude(null);
+                    locationNewNameView.setVisibility(View.VISIBLE);
+                    isNewLocation = true;
+                } else {
+                    viewModelAddClimb.setOutputLocationName("");
+                    locationNewNameView.setVisibility(View.GONE);
+                    isNewLocation = false;
+                }
+            }
+        });
+
+        /*
+        Observe the picked location type
+         */
+        viewModelAddClimb.getPickedLocationList().observe(getViewLifecycleOwner(), new Observer<LocationList>() {
+            @Override
+            public void onChanged(@Nullable LocationList locationList) {
+                if (locationList != null) {
+                    viewModelAddClimb.setOutputLocationName(locationList.getLocationName());
+                    viewModelAddClimb.setOutputHasGps(locationList.isGps());
+                    viewModelAddClimb.setOutputLatitude(locationList.getGpsLatitude());
+                    viewModelAddClimb.setOutputLongitude(locationList.getGpsLongitude());
+                }
             }
         });
 

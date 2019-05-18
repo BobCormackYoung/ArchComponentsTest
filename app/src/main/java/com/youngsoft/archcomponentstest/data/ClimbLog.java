@@ -49,40 +49,65 @@ public class ClimbLog {
     public int getId() {
         return id;
     }
+    public long getDate() {
+        return date;
+    }
+    public String getName() {
+        return name;
+    }
+    public int getGradeTypeCode() {
+        return gradeTypeCode;
+    }
+    public int getGradeCode() {
+        return gradeCode;
+    }
+    public int getAscentTypeCode() {
+        return ascentTypeCode;
+    }
+    public int getLocation() {
+        return location;
+    }
+    public boolean getFirstAscentCode() {
+        return firstAscentCode;
+    }
+    public boolean getIsClimbCode() {
+        return isClimbCode;
+    }
+
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public long getDate() {
-        return date;
+    public void setDate(long input) {
+        date = input;
     }
 
-    public String getName() {
-        return name;
+    public void setName(String input) {
+        name = input;
     }
 
-    public int getGradeTypeCode() {
-        return gradeTypeCode;
+    public void setGradeTypeCode(int input) {
+        gradeTypeCode = input;
     }
 
-    public int getGradeCode() {
-        return gradeCode;
+    public void setGradeCode(int input) {
+        gradeCode = input;
     }
 
-    public int getAscentTypeCode() {
-        return ascentTypeCode;
+    public void setAscentTypeCode(int input) {
+        ascentTypeCode = input;
     }
 
-    public int getLocation() {
-        return location;
+    public void setLocation(int input) {
+        location = input;
     }
 
-    public boolean getFirstAscentCode() {
-        return firstAscentCode;
+    public void setFirstAscentCode(boolean input) {
+        firstAscentCode = input;
     }
 
-    public boolean getIsClimbCode() {
-        return isClimbCode;
+    public void setClimbCode(boolean input) {
+        isClimbCode = input;
     }
 }
