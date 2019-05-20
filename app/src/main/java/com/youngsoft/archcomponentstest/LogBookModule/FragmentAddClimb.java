@@ -49,6 +49,8 @@ import java.util.Calendar;
 
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
 
+//TODO: Fix bug with the location name not reset when selected existing location, then changing to select a new location
+
 public class FragmentAddClimb extends Fragment {
 
     private static final String[] LOCATION_PERMS = {Manifest.permission.ACCESS_FINE_LOCATION};
@@ -80,7 +82,6 @@ public class FragmentAddClimb extends Fragment {
     FusedLocationProviderClient fusedLocationClient;
     LocationRequest locationRequest;
     LocationCallback locationCallback;
-
 
     public FragmentAddClimb() {
         // Required empty public constructor
@@ -131,7 +132,7 @@ public class FragmentAddClimb extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    viewModelAddClimb.setOutputLocationName(locationNewNameView.getText().toString());
+                    viewModelAddClimb.setOutputLocationNameMutable(locationNewNameView.getText().toString());
                 }
             }
         });
@@ -155,12 +156,10 @@ public class FragmentAddClimb extends Fragment {
             @Override
             public void onClick(View v) {
                 if (viewModelAddClimb.getGpsAccessPermission()) {
-                    Log.i("AddClimb GPS", "onCreate > GPS Button Pressed Access > gpsAccessPermission=true");
                     //gpsGetLastLocation();
                     createLocationRequest();
                     startLocationUpdates();
                 } else {
-                    Log.i("AddClimb GPS", "onCreate > GPS Button Pressed Access > gpsAccessPermission=false");
                 }
             }
         });
@@ -184,7 +183,6 @@ public class FragmentAddClimb extends Fragment {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
-                    Log.i("AddClimb GPS", "mLocationCallback > onLocationResult = null");
                     ivGreenTick.setVisibility(View.GONE);
                     ivGreyCross.setVisibility(View.VISIBLE);
                     //ivAvi.setVisibility(View.GONE);
@@ -193,12 +191,11 @@ public class FragmentAddClimb extends Fragment {
                 }
                 for (Location location : locationResult.getLocations()) {
                     // Update viewModel with location data
-                    viewModelAddClimb.setOutputLatitude(location.getLatitude());
-                    viewModelAddClimb.setOutputLongitude(location.getLongitude());
-                    viewModelAddClimb.setOutputHasGps(true);
+                    viewModelAddClimb.setOutputLatitudeMutable(location.getLatitude());
+                    viewModelAddClimb.setOutputLongitudeMutable(location.getLongitude());
+                    viewModelAddClimb.setOutputHasGpsMutable(true);
 
                     // new GPS value... turn off GPS updates
-                    Log.i("AddClimb GPS", "mLocationCallback > onLocationResult = turning off location updates");
                     stopLocationUpdates();
                     viewModelAddClimb.setRequestingLocationUpdates(false);
                 }
@@ -272,7 +269,7 @@ public class FragmentAddClimb extends Fragment {
         /*
         Observe longitude & update views
          */
-        viewModelAddClimb.getOutputLongitude().observe(getViewLifecycleOwner(), new Observer<Double>() {
+        viewModelAddClimb.getOutputLongitudeMutable().observe(getViewLifecycleOwner(), new Observer<Double>() {
             @Override
             public void onChanged(@Nullable Double aDouble) {
                 if (aDouble != null) {
@@ -284,7 +281,7 @@ public class FragmentAddClimb extends Fragment {
         /*
         Observe latitude & update views
          */
-        viewModelAddClimb.getOutputLatitude().observe(getViewLifecycleOwner(), new Observer<Double>() {
+        viewModelAddClimb.getOutputLatitudeMutable().observe(getViewLifecycleOwner(), new Observer<Double>() {
             @Override
             public void onChanged(@Nullable Double aDouble) {
                 if (aDouble != null) {
@@ -296,7 +293,7 @@ public class FragmentAddClimb extends Fragment {
         /*
         Observe gps status and update views
          */
-        viewModelAddClimb.getOutputHasGps().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+        viewModelAddClimb.getOutputHasGpsMutable().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean aBoolean) {
                 if (aBoolean != null) {
@@ -320,7 +317,7 @@ public class FragmentAddClimb extends Fragment {
         /*
         Observe location name
          */
-        viewModelAddClimb.getOutputLocationName().observe(getViewLifecycleOwner(), new Observer<String>() {
+        viewModelAddClimb.getOutputLocationNameMutable().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 if (!s.isEmpty()) {
@@ -346,18 +343,19 @@ public class FragmentAddClimb extends Fragment {
         /*
         Observe whether we're creating a new location or not
          */
-        viewModelAddClimb.getIsNewLocation().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+        viewModelAddClimb.getIsNewLocationMutable().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean aBoolean) {
                 if (aBoolean) {
-                    locationNameView.setText("Create New Location");
-                    viewModelAddClimb.setOutputHasGps(false);
-                    viewModelAddClimb.setOutputLatitude(null);
-                    viewModelAddClimb.setOutputLongitude(null);
+                    locationNameView.setText("New Location...");
+                    viewModelAddClimb.setOutputHasGpsMutable(false);
+                    viewModelAddClimb.setOutputLatitudeMutable(null);
+                    viewModelAddClimb.setOutputLongitudeMutable(null);
+                    viewModelAddClimb.setOutputLocationNameMutable("");
                     locationNewNameView.setVisibility(View.VISIBLE);
                     isNewLocation = true;
                 } else {
-                    viewModelAddClimb.setOutputLocationName("");
+                    viewModelAddClimb.setOutputLocationNameMutable("");
                     locationNewNameView.setVisibility(View.GONE);
                     isNewLocation = false;
                 }
@@ -371,10 +369,10 @@ public class FragmentAddClimb extends Fragment {
             @Override
             public void onChanged(@Nullable LocationList locationList) {
                 if (locationList != null) {
-                    viewModelAddClimb.setOutputLocationName(locationList.getLocationName());
-                    viewModelAddClimb.setOutputHasGps(locationList.isGps());
-                    viewModelAddClimb.setOutputLatitude(locationList.getGpsLatitude());
-                    viewModelAddClimb.setOutputLongitude(locationList.getGpsLongitude());
+                    viewModelAddClimb.setOutputLocationNameMutable(locationList.getLocationName());
+                    viewModelAddClimb.setOutputHasGpsMutable(locationList.isGps());
+                    viewModelAddClimb.setOutputLatitudeMutable(locationList.getGpsLatitude());
+                    viewModelAddClimb.setOutputLongitudeMutable(locationList.getGpsLongitude());
                 }
             }
         });
@@ -450,9 +448,9 @@ public class FragmentAddClimb extends Fragment {
             public void onSuccess(Location location) {
                 // Got last known location. In some rare situations this can be null.
                 if (location != null) {
-                    viewModelAddClimb.setOutputLatitude(location.getLatitude());
-                    viewModelAddClimb.setOutputLongitude(location.getLongitude());
-                    viewModelAddClimb.setOutputHasGps(true);
+                    viewModelAddClimb.setOutputLatitudeMutable(location.getLatitude());
+                    viewModelAddClimb.setOutputLongitudeMutable(location.getLongitude());
+                    viewModelAddClimb.setOutputHasGpsMutable(true);
                 } else {
                 }
             }

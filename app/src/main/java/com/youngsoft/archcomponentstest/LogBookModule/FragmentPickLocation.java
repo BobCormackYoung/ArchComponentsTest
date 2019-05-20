@@ -56,6 +56,14 @@ public class FragmentPickLocation extends Fragment {
             }
         });
 
+        view.findViewById(R.id.bt_new_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModelAddClimb.setIsNewLocationMutable(true);
+                exitFragment();
+            }
+        });
+
         customOnKeyListener = new CustomOnKeyListener();
     }
 
