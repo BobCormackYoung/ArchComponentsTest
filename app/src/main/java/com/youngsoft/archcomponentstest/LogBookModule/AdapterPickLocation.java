@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.youngsoft.archcomponentstest.R;
@@ -35,20 +36,20 @@ public class AdapterPickLocation extends ListAdapter<LocationList, AdapterPickLo
     };
     private FragmentPickLocation parentFragment;
     private DataRepository dataRepository;
-    private ViewModelAddClimb viewModelAddClimb;
+    private ViewModelPickLocation viewModelPickLocation;
 
-    public AdapterPickLocation(DataRepository dataRepository, FragmentPickLocation parentFragment, ViewModelAddClimb viewModelAddClimb) {
+    public AdapterPickLocation(DataRepository dataRepository, FragmentPickLocation parentFragment, ViewModelPickLocation viewModelPickLocation) {
         super(DIFF_CALLBACK);
         this.dataRepository = dataRepository;
         this.parentFragment = parentFragment;
-        this.viewModelAddClimb = viewModelAddClimb;
+        this.viewModelPickLocation = viewModelPickLocation;
     }
 
     @NonNull
     @Override
     public AdapterPickLocation.LocationListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.listview_item_nodescription, parent, false);
+                .inflate(R.layout.listview_item_location, parent, false);
         return new AdapterPickLocation.LocationListHolder(itemView);
     }
 
@@ -56,16 +57,24 @@ public class AdapterPickLocation extends ListAdapter<LocationList, AdapterPickLo
     public void onBindViewHolder(@NonNull AdapterPickLocation.LocationListHolder holder, int position) {
         LocationList currentLocationList = getItem(position);
         holder.nameTextView.setText(currentLocationList.getLocationName());
-        //holder.descriptionIcon.setOnClickListener(new AdapterPickAscent.AscentDescriptionOnClickLister(currentAscentType, holder));
-        holder.nameTextView.setOnClickListener(new PickLocationOnClickListener(currentLocationList, viewModelAddClimb));
+        holder.climbCountTextView.setText(Integer.toString(currentLocationList.getClimbCount()));
+        if (currentLocationList.isGps()) {
+            holder.hasNoGpsImageView.setVisibility(View.GONE);
+            holder.hasYesGpsImageView.setVisibility(View.VISIBLE);
+        } else {
+            holder.hasNoGpsImageView.setVisibility(View.VISIBLE);
+            holder.hasYesGpsImageView.setVisibility(View.GONE);
+        }
+        holder.nameTextView.setOnClickListener(new PickLocationOnClickListener(currentLocationList, viewModelPickLocation));
+
     }
 
     public class PickLocationOnClickListener implements View.OnClickListener {
 
-        ViewModelAddClimb viewModel;
+        ViewModelPickLocation viewModel;
         LocationList locationList;
 
-        public PickLocationOnClickListener(LocationList locationList, ViewModelAddClimb viewModel) {
+        public PickLocationOnClickListener(LocationList locationList, ViewModelPickLocation viewModel) {
             this.viewModel = viewModel;
             this.locationList = locationList;
         }
@@ -73,21 +82,23 @@ public class AdapterPickLocation extends ListAdapter<LocationList, AdapterPickLo
         @Override
         public void onClick(View v) {
             viewModel.setPickedLocation(locationList);
-            viewModel.setIsNewLocationMutable(false);
             parentFragment.exitFragment();
         }
     }
 
     class LocationListHolder extends RecyclerView.ViewHolder {
         TextView nameTextView;
-        //ImageView descriptionIcon;
+        TextView climbCountTextView;
+        ImageView hasNoGpsImageView;
+        ImageView hasYesGpsImageView;
 
         public LocationListHolder(View itemView) {
             super(itemView);
             //map all views
             nameTextView = itemView.findViewById(R.id.list_item_text);
-            //descriptionIcon = itemView.findViewById(R.id.list_item_desc_info_button);
-
+            climbCountTextView = itemView.findViewById(R.id.list_item_climbcount);
+            hasNoGpsImageView = itemView.findViewById(R.id.list_item_nogps);
+            hasYesGpsImageView = itemView.findViewById(R.id.list_item_yesgps);
         }
     }
 
