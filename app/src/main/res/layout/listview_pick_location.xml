@@ -1,21 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rv_location_parent_wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/bt_new_location"
+    <LinearLayout
+        android:id="@+id/ll_new_location_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="Create New Location" />
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/bt_new_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="Create New Location" />
+
+        <LinearLayout
+            android:id="@+id/ll_new_location_data_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/et_new_loc_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="LocationName" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_new_loc_getGps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Get GPS" />
+
+                <ImageView
+                    android:id="@+id/iv_new_loc_grey_cross"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_grey_cross" />
+
+                <com.wang.avi.AVLoadingIndicatorView
+                    android:id="@+id/iv_av_new_loc_loading_indicator"
+                    style="@style/AVLoadingIndicatorView"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="0dp"
+                    app:indicatorColor="#808080"
+                    app:indicatorName="BallClipRotatePulseIndicator" />
+
+                <ImageView
+                    android:id="@+id/iv_new_loc_green_tick"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_green_tick" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="76dp"
+                        android:layout_height="wrap_content"
+                        android:text="Latitude:" />
+
+                    <TextView
+                        android:id="@+id/tv_new_loc_latitude"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="76dp"
+                        android:layout_height="wrap_content"
+                        android:text="Longitude:" />
+
+                    <TextView
+                        android:id="@+id/tv_new_loc_longitude"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_new_loc_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Save" />
+
+                <Button
+                    android:id="@+id/bt_new_loc_cancel"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Cancel" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_parent_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/bt_new_location"
+        android:layout_below="@id/ll_new_location_wrapper"
         android:gravity="center"
         android:text="insert listview here" />
 

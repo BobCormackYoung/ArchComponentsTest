@@ -5,11 +5,9 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
@@ -34,7 +32,6 @@ public abstract class DataDatabase extends RoomDatabase {
                     instance.dataDao().insertMultipleLocationList(LocationList.populateLocationListData());
                     instance.dataDao().insertMultipleWorkoutList(WorkoutList.populateWorkoutListData());
                     instance.dataDao().insertMultipleWorkoutType(WorkoutType.populateWorkoutTypeData());
-
                     instance.dataDao().insertMultipleClimbLog(ClimbLog.populateClimbLogData());
                     instance.dataDao().insertMultipleCalendarTracker(CalendarTracker.populateCalendarTracker());
                 }

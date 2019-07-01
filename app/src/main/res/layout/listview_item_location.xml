@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="right">
+
+    <TextView
+        android:id="@+id/list_item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginLeft="24dp"
+        android:focusable="false"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textStyle="bold"
+        tools:text="Blah Blah Test" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/list_item_text"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="90dp"
+                android:layout_height="24dp"
+                android:gravity="center"
+                android:text="Climb Count"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/list_item_climbcount"
+                android:layout_width="90dp"
+                android:layout_height="24dp"
+                android:gravity="center"
+                tools:text="200" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/list_item_yesgps"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_margin="9dp"
+            android:background="@drawable/ic_baseline_gps_fixed_24px"
+            android:scaleType="centerInside" />
+
+        <ImageView
+            android:id="@+id/list_item_nogps"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_margin="9dp"
+            android:background="@drawable/ic_baseline_gps_off_24px"
+            android:scaleType="centerInside" />
+
+    </LinearLayout>
+
+</RelativeLayout>

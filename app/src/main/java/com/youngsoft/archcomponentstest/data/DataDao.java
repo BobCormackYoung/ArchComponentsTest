@@ -38,6 +38,9 @@ public interface DataDao {
     void insertMultipleClimbLog(ClimbLog... climbLogs);
 
     @Insert
+    void insertNewLocation(LocationList locationList);
+
+    @Insert
     void insertMultipleCalendarTracker(CalendarTracker... calendarTrackers);
 
 

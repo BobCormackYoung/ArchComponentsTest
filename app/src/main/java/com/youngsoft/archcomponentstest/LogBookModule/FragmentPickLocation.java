@@ -13,7 +13,13 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.wang.avi.AVLoadingIndicatorView;
 import com.youngsoft.archcomponentstest.R;
 import com.youngsoft.archcomponentstest.data.LocationList;
 
@@ -22,9 +28,22 @@ import java.util.List;
 public class FragmentPickLocation extends Fragment {
 
     ViewModelAddClimb viewModelAddClimb;
+    ViewModelPickLocation viewModelPickLocation;
     View view;
     RecyclerView recyclerView;
     CustomOnKeyListener customOnKeyListener;
+
+    Button newLocationButtonCreate;
+    Button newLocationButtonCancel;
+    Button newLocationButtonSave;
+    LinearLayout newLocationDataWrapper;
+    Button newLocationGetGPS;
+    TextView newLocationLatitude;
+    TextView newLocationLongitude;
+    EditText newLocationName;
+    ImageView newLocationGreenTick;
+    ImageView newLocationGreyCross;
+    AVLoadingIndicatorView newLocationIvAvi;
 
     public FragmentPickLocation() {
         // Required empty public constructor
@@ -34,6 +53,18 @@ public class FragmentPickLocation extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.listview_pick_location, container, false);
+        newLocationButtonCreate = view.findViewById(R.id.bt_new_location);
+        newLocationButtonCancel = view.findViewById(R.id.bt_new_loc_cancel);
+        newLocationButtonSave = view.findViewById(R.id.bt_new_loc_save);
+        newLocationDataWrapper = view.findViewById(R.id.ll_new_location_data_wrapper);
+        newLocationGetGPS = view.findViewById(R.id.bt_new_loc_getGps);
+        newLocationLatitude = view.findViewById(R.id.tv_new_loc_latitude);
+        newLocationLongitude = view.findViewById(R.id.tv_new_loc_longitude);
+        newLocationName = view.findViewById(R.id.et_new_loc_name);
+        newLocationGreenTick = view.findViewById(R.id.iv_new_loc_green_tick);
+        newLocationGreyCross = view.findViewById(R.id.iv_new_loc_grey_cross);
+        newLocationIvAvi = view.findViewById(R.id.iv_av_new_loc_loading_indicator);
+        newLocationDataWrapper.setVisibility(View.GONE);
         return view;
     }
 
@@ -42,25 +73,63 @@ public class FragmentPickLocation extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         viewModelAddClimb = ViewModelProviders.of(getParentFragment()).get(ViewModelAddClimb.class);
+        viewModelPickLocation = ViewModelProviders.of(getParentFragment()).get(ViewModelPickLocation.class);
 
-        final AdapterPickLocation adapter = new AdapterPickLocation(viewModelAddClimb.getDataRepository(), this, viewModelAddClimb);
+        final AdapterPickLocation adapter = new AdapterPickLocation(viewModelPickLocation.getDataRepository(), this, viewModelPickLocation);
         recyclerView = view.findViewById(R.id.rv_parent_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
         recyclerView.setAdapter(adapter);
-        viewModelAddClimb.getLocationListLiveData().observe(getViewLifecycleOwner(), new Observer<List<LocationList>>() {
+        viewModelPickLocation.getLocationListLiveData().observe(getViewLifecycleOwner(), new Observer<List<LocationList>>() {
             @Override
             public void onChanged(@Nullable List<LocationList> locationLists) {
                 adapter.submitList(locationLists);
             }
         });
 
-        view.findViewById(R.id.bt_new_location).setOnClickListener(new View.OnClickListener() {
+        newLocationButtonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModelAddClimb.setIsNewLocationMutable(true);
-                exitFragment();
+                newLocationDataWrapper.setVisibility(View.VISIBLE);
+            }
+        });
+
+        newLocationButtonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newLocationDataWrapper.setVisibility(View.GONE);
+                viewModelPickLocation.resetNewLocation();
+                newLocationLatitude.setText(Double.toString(viewModelPickLocation.getNewLocationLatitude()));
+                newLocationLongitude.setText(Double.toString(viewModelPickLocation.getNewLocationLongitude()));
+                newLocationName.getText().clear();
+                newLocationGreenTick.setVisibility(View.GONE);
+                newLocationGreyCross.setVisibility(View.VISIBLE);
+                newLocationIvAvi.setVisibility(View.GONE);
+            }
+        });
+
+        newLocationButtonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newLocationDataWrapper.setVisibility(View.GONE);
+                viewModelPickLocation.saveNewLocation();
+                viewModelPickLocation.resetNewLocation();
+                newLocationLatitude.setText(Double.toString(viewModelPickLocation.getNewLocationLatitude()));
+                newLocationLongitude.setText(Double.toString(viewModelPickLocation.getNewLocationLongitude()));
+                newLocationName.getText().clear();
+                newLocationGreenTick.setVisibility(View.GONE);
+                newLocationGreyCross.setVisibility(View.VISIBLE);
+                newLocationIvAvi.setVisibility(View.GONE);
+            }
+        });
+
+        newLocationName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    viewModelPickLocation.setNewLocationName(newLocationName.getText().toString());
+                }
             }
         });
 

@@ -117,6 +117,23 @@ public class DataRepository {
 
     }
 
+    public void addNewLocation(String name, double latitude, double longitude, boolean hasGps) {
+        final LocationList[] newLocation = new LocationList[]{
+                new LocationList(name,
+                        0,
+                        longitude,
+                        latitude,
+                        hasGps),};
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                dataDao.insertMultipleLocationList(newLocation);
+                return null;
+            }
+        }.execute();
+    }
+
 
     private static class UpdateNoteAsyncTask extends AsyncTask<ClimbLogData, Void, Void> {
         private DataDao dataDao;

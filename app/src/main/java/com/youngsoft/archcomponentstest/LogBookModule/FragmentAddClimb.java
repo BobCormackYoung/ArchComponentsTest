@@ -274,6 +274,8 @@ public class FragmentAddClimb extends Fragment {
             public void onChanged(@Nullable Double aDouble) {
                 if (aDouble != null) {
                     textViewLongitude.setText(Double.toString(aDouble));
+                } else {
+                    textViewLongitude.setText("");
                 }
             }
         });
@@ -286,6 +288,8 @@ public class FragmentAddClimb extends Fragment {
             public void onChanged(@Nullable Double aDouble) {
                 if (aDouble != null) {
                     textViewLatitude.setText(Double.toString(aDouble));
+                } else {
+                    textViewLatitude.setText("");
                 }
             }
         });
@@ -320,12 +324,17 @@ public class FragmentAddClimb extends Fragment {
         viewModelAddClimb.getOutputLocationNameMutable().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                if (!s.isEmpty()) {
-                    if (isNewLocation) {
-                        locationNewNameView.setText(s);
-                    } else {
-                        locationNameView.setText(s);
+                if (s != null) {
+                    if (!s.isEmpty()) {
+                        if (isNewLocation) {
+                            locationNewNameView.setText(s);
+                        } else {
+                            locationNameView.setText(s);
+                        }
                     }
+                } else {
+                    locationNewNameView.setText(s);
+                    locationNameView.setText(s);
                 }
             }
         });
@@ -347,11 +356,12 @@ public class FragmentAddClimb extends Fragment {
             @Override
             public void onChanged(@Nullable Boolean aBoolean) {
                 if (aBoolean) {
+                    Log.i(this.toString(), "New Location = true");
                     locationNameView.setText("New Location...");
                     viewModelAddClimb.setOutputHasGpsMutable(false);
                     viewModelAddClimb.setOutputLatitudeMutable(null);
                     viewModelAddClimb.setOutputLongitudeMutable(null);
-                    viewModelAddClimb.setOutputLocationNameMutable("");
+                    viewModelAddClimb.setOutputLocationNameMutable(null);
                     locationNewNameView.setVisibility(View.VISIBLE);
                     isNewLocation = true;
                 } else {
