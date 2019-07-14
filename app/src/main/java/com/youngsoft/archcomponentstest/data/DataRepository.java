@@ -135,6 +135,16 @@ public class DataRepository {
     }
 
 
+    public void addNewClimb(long date, String name, int gradeTypeCode, int gradeCode,
+                            int ascentTypeCode, int location, boolean firstAscentCode, boolean isClimbCode) {
+
+        //Add new climb
+
+        //Add to the calendar tracker
+
+        //Increment location climb count
+    }
+
     private static class UpdateNoteAsyncTask extends AsyncTask<ClimbLogData, Void, Void> {
         private DataDao dataDao;
 

@@ -22,6 +22,9 @@ public class ViewModelPickLocation extends AndroidViewModel {
     private double newLocationLongitude = 0;
     private boolean newlocationisgps = false;
 
+    private MutableLiveData<Boolean> requestingLocationUpdates = new MutableLiveData<>();
+    private Boolean gpsAccessPermission = false;
+
     public ViewModelPickLocation(@NonNull Application application) {
         super(application);
         dataRepository = new DataRepository(application);
@@ -74,23 +77,28 @@ public class ViewModelPickLocation extends AndroidViewModel {
         this.newLocationLongitude = newLocationLongitude;
     }
 
-    public boolean isNewlocationisgps() {
+    public boolean isNewLocationIsGps() {
         return newlocationisgps;
     }
 
-    public void setNewlocationisgps(boolean newlocationisgps) {
+    public void setNewLocationIsGps(boolean newlocationisgps) {
         this.newlocationisgps = newlocationisgps;
     }
 
-    public void saveNewLocation() {
-        dataRepository.addNewLocation(newLocationName, newLocationLatitude, newLocationLongitude, newlocationisgps);
+    public boolean saveNewLocation() {
+        if (newLocationName.isEmpty()) {
+            return false;
+        } else {
+            dataRepository.addNewLocation(newLocationName, newLocationLatitude, newLocationLongitude, newlocationisgps);
+            return true;
+        }
     }
 
     public void resetNewLocation() {
         setNewLocationName(null);
         setNewLocationLatitude(0);
-        setNewLocationLatitude(0);
-        setNewlocationisgps(false);
+        setNewLocationLongitude(0);
+        setNewLocationIsGps(false);
     }
 
 }

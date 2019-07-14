@@ -37,12 +37,14 @@ public class AdapterPickLocation extends ListAdapter<LocationList, AdapterPickLo
     private FragmentPickLocation parentFragment;
     private DataRepository dataRepository;
     private ViewModelPickLocation viewModelPickLocation;
+    private ViewModelAddClimb viewModelAddClimb;
 
-    public AdapterPickLocation(DataRepository dataRepository, FragmentPickLocation parentFragment, ViewModelPickLocation viewModelPickLocation) {
+    public AdapterPickLocation(DataRepository dataRepository, FragmentPickLocation parentFragment, ViewModelPickLocation viewModelPickLocation, ViewModelAddClimb viewModelAddClimb) {
         super(DIFF_CALLBACK);
         this.dataRepository = dataRepository;
         this.parentFragment = parentFragment;
         this.viewModelPickLocation = viewModelPickLocation;
+        this.viewModelAddClimb = viewModelAddClimb;
     }
 
     @NonNull
@@ -65,16 +67,17 @@ public class AdapterPickLocation extends ListAdapter<LocationList, AdapterPickLo
             holder.hasNoGpsImageView.setVisibility(View.VISIBLE);
             holder.hasYesGpsImageView.setVisibility(View.GONE);
         }
-        holder.nameTextView.setOnClickListener(new PickLocationOnClickListener(currentLocationList, viewModelPickLocation));
+        //holder.nameTextView.setOnClickListener(new PickLocationOnClickListener(currentLocationList, viewModelAddClimb));
+        holder.nameTextView.setOnClickListener(new PickLocationOnClickListener(currentLocationList, viewModelAddClimb));
 
     }
 
     public class PickLocationOnClickListener implements View.OnClickListener {
 
-        ViewModelPickLocation viewModel;
+        ViewModelAddClimb viewModel;
         LocationList locationList;
 
-        public PickLocationOnClickListener(LocationList locationList, ViewModelPickLocation viewModel) {
+        public PickLocationOnClickListener(LocationList locationList, ViewModelAddClimb viewModel) {
             this.viewModel = viewModel;
             this.locationList = locationList;
         }

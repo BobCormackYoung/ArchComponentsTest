@@ -5,7 +5,9 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.youngsoft.archcomponentstest.UtilModule.TimeUtils;
 import com.youngsoft.archcomponentstest.data.AscentType;
 import com.youngsoft.archcomponentstest.data.CombinedGradeData;
 import com.youngsoft.archcomponentstest.data.DataRepository;
@@ -25,32 +27,21 @@ public class ViewModelAddClimb extends AndroidViewModel {
     private LiveData<List<GradeList>> subsetGradeLiveData;
     private LiveData<List<LocationList>> locationListLiveData;
 
+    private MutableLiveData<Long> dateEntry = new MutableLiveData<>();
     private MutableLiveData<String> routeName = new MutableLiveData<>();
-    private String outputRouteName;
     private MutableLiveData<Boolean> isFirstAscent = new MutableLiveData<>();
-    private Boolean outputIsFirstAscent;
     private MutableLiveData<AscentType> pickedAscentType = new MutableLiveData<>();
-    private int outputPickedAscentType;
 
     private MutableLiveData<GradeType> pickedGradeTypeMutableLiveData = new MutableLiveData<>();
-    private int outputGradeType;
     private MutableLiveData<GradeList> pickedGradeListMutableLiveData = new MutableLiveData<>();
-    private int outputGrade;
     private MutableLiveData<CombinedGradeData> pickedCombinedGradeLiveData = new MutableLiveData<>();
 
     private MutableLiveData<LocationList> pickedLocationMutableLiveData = new MutableLiveData<>();
-    private int pickedLocation;
-    private int pickedLocationClimbCount;
     private MutableLiveData<Boolean> isNewLocationMutable = new MutableLiveData<>();
-    private Boolean outputIsNewLocation;
     private MutableLiveData<Double> outputLatitudeMutable = new MutableLiveData<>();
-    private Double outputLatitude;
     private MutableLiveData<Double> outputLongitudeMutable = new MutableLiveData<>();
-    private Double outputLongitude;
     private MutableLiveData<String> outputLocationNameMutable = new MutableLiveData<>();
-    private String outputLocationName;
     private MutableLiveData<Boolean> outputHasGpsMutable = new MutableLiveData<>();
-    private Boolean outputHasGps;
 
     private MutableLiveData<Boolean> requestingLocationUpdates = new MutableLiveData<>();
     private Boolean gpsAccessPermission = false;
@@ -120,7 +111,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setIsNewLocationMutable(Boolean input) {
         isNewLocationMutable.setValue(input);
-        outputIsNewLocation = input;
     }
 
     public LiveData<LocationList> getPickedLocationList() {
@@ -129,8 +119,10 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setPickedLocation(LocationList input) {
         pickedLocationMutableLiveData.setValue(input);
-        pickedLocation = input.getId();
-        pickedLocationClimbCount = input.getClimbCount();
+    }
+
+    public void setDateEntry(Long input) {
+        dateEntry.setValue(input);
     }
 
     public LiveData<Double> getOutputLatitudeMutable() {
@@ -139,7 +131,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setOutputLatitudeMutable(Double input) {
         outputLatitudeMutable.setValue(input);
-        outputLatitude = input;
     }
 
     public LiveData<Double> getOutputLongitudeMutable() {
@@ -148,7 +139,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setOutputLongitudeMutable(Double input) {
         outputLongitudeMutable.setValue(input);
-        outputLongitude = input;
     }
 
     public LiveData<String> getOutputLocationNameMutable() {
@@ -157,7 +147,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setOutputLocationNameMutable(String input) {
         outputLocationNameMutable.setValue(input);
-        outputLocationName = input;
     }
 
     public LiveData<Boolean> getOutputHasGpsMutable() {
@@ -166,7 +155,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setOutputHasGpsMutable(Boolean input) {
         outputHasGpsMutable.setValue(input);
-        outputHasGps = input;
     }
 
     /*
@@ -178,7 +166,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setRouteName(String routeName) {
         this.routeName.setValue(routeName);
-        outputRouteName = routeName;
     }
 
     /*
@@ -190,7 +177,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setIsFirstAscent(Boolean isFirstAscent) {
         this.isFirstAscent.setValue(isFirstAscent);
-        outputIsFirstAscent = isFirstAscent;
     }
 
     /*
@@ -202,7 +188,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
 
     public void setPickedAscentType(AscentType pickedAscentType) {
         this.pickedAscentType.setValue(pickedAscentType);
-        outputPickedAscentType = pickedAscentType.getId();
     }
 
     /*
@@ -232,8 +217,6 @@ public class ViewModelAddClimb extends AndroidViewModel {
     public void setPickedCombinedGradeLiveData(GradeType pickedGradeType, GradeList pickedGradeList) {
         CombinedGradeData combinedGradeData = new CombinedGradeData(pickedGradeType, pickedGradeList);
         pickedCombinedGradeLiveData.setValue(combinedGradeData);
-        outputGradeType = pickedGradeType.getId();
-        outputGrade = pickedGradeList.getId();
     }
 
     /*
@@ -259,6 +242,23 @@ public class ViewModelAddClimb extends AndroidViewModel {
     Saving data
      */
     public void saveClimbData() {
-        //If
+
+        // Check for data completeness
+        /*dataRepository.addNewClimb(dateEntry.getValue(),
+                routeName.getValue(),
+                pickedGradeTypeMutableLiveData.getValue().getId(),
+                pickedGradeListMutableLiveData.getValue().getId(),
+                pickedAscentType.getValue().getId(),
+                pickedLocationMutableLiveData.getValue().getId(),
+                isFirstAscent.getValue(),
+                true);*/
+
+        Log.i("SaveClimb", "Date: " + dateEntry.getValue() + " " + TimeUtils.convertDate(dateEntry.getValue(), "yyyy-MM-dd"));
+        Log.i("SaveClimb", "RouteName: " + routeName.getValue());
+        Log.i("SaveClimb", "GradeType: " + pickedGradeTypeMutableLiveData.getValue().getId() + " " + pickedGradeTypeMutableLiveData.getValue().getGradeTypeName());
+        Log.i("SaveClimb", "Grade: " + pickedGradeListMutableLiveData.getValue().getId() + " " + pickedGradeListMutableLiveData.getValue().getGradeName());
+        Log.i("SaveClimb", "AscentType: " + pickedAscentType.getValue().getId() + " " + pickedAscentType.getValue().getAscentName());
+        Log.i("SaveClimb", "Location: " + pickedLocationMutableLiveData.getValue().getId() + " " + pickedLocationMutableLiveData.getValue().getLocationName());
+        Log.i("SaveClimb", "FirstAscent: " + isFirstAscent.getValue());
     }
 }

@@ -15,6 +15,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +51,7 @@ import java.util.Calendar;
 
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
 
-//TODO: Fix bug with the location name not reset when selected existing location, then changing to select a new location
+//TODO: Remove the
 
 public class FragmentAddClimb extends Fragment {
 
@@ -119,12 +121,18 @@ public class FragmentAddClimb extends Fragment {
             }
         });
 
-        routeNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        routeNameView.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    viewModelAddClimb.setRouteName(routeNameView.getText().toString());
-                }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModelAddClimb.setRouteName(routeNameView.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
 
@@ -147,6 +155,14 @@ public class FragmentAddClimb extends Fragment {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                exitFragment();
+            }
+        });
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModelAddClimb.saveClimbData();
                 exitFragment();
             }
         });
@@ -346,6 +362,7 @@ public class FragmentAddClimb extends Fragment {
             @Override
             public void onChanged(@Nullable Calendar calendar) {
                 dateView.setText(TimeUtils.convertDate(calendar.getTimeInMillis(), "yyyy-MM-dd"));
+                viewModelAddClimb.setDateEntry(calendar.getTimeInMillis());
             }
         });
 
